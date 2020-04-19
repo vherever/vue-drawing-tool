@@ -16,13 +16,14 @@ import CanvasSnapGridService from '@/services/canvas-snap-grid.service';
 @Component
 export default class Canvas extends Vue {
   private canvas!: fabric.Canvas;
-
   private gridInitialized: boolean = false;
+  private snapGridInstance!: CanvasSnapGridService;
 
   mounted() {
     this.initCanvas();
-    this.setCanvasSize(1200, 800);
+    this.setCanvasSize(800, 600);
     this.listenToEvents();
+    this.snapGridInstance = new CanvasSnapGridService(this.canvas);
   }
 
   private initCanvas(): void {
@@ -35,9 +36,8 @@ export default class Canvas extends Vue {
     this.canvas.renderAll();
   }
 
-  private snapToGrid(canvas: fabric.Canvas): void {
-    const snapGridInstance = new CanvasSnapGridService(this.canvas);
-    snapGridInstance.gridSnap();
+  private removeGrid(): void {
+    this.snapGridInstance.removeGrid();
   }
 
   private setCanvasSize(width: number, height: number): void {
@@ -47,18 +47,15 @@ export default class Canvas extends Vue {
   private listenToEvents(): void {
     EventBus.$on('isDrawingMode', (isDrawingMode: boolean) => {
       this.canvas.isDrawingMode = isDrawingMode;
-      if (!this.canvas.isDrawingMode) {
-        const canvasElements = this.canvas.getObjects();
-        this.canvas.clear();
-        this.canvas.backgroundColor = '#FFFFFF';
-        this.snapToGrid(this.canvas);
-        this.canvas.add(...canvasElements);
-        this.gridInitialized = true;
-      }
+      // this.snapToGrid();
     });
 
     this.canvas.on('object:moving', (e) => {
       // console.log('___ moving', e.target); // todo
+    });
+
+    this.canvas.on('object:rotating', (e: any) => {
+      // console.log('___ rotating', e.target); // todo
     });
 
     this.canvas.on('mouse:over', (e: any) => {
@@ -94,6 +91,20 @@ export default class Canvas extends Vue {
         this.canvas.clearContext((this.canvas as any).contextTop);
       }
     });
+  }
+
+  private snapToGrid(): void {
+    if (!this.canvas.isDrawingMode && !this.gridInitialized) {
+      const canvasElements = this.canvas.getObjects();
+      this.canvas.clear();
+      this.canvas.backgroundColor = '#FFFFFF';
+      this.snapGridInstance.gridSnap();
+      this.canvas.add(...canvasElements);
+      this.gridInitialized = true;
+    } else {
+      this.removeGrid();
+      this.gridInitialized = false;
+    }
   }
 }
 </script>

@@ -15,7 +15,8 @@ export default class CanvasSnapGridService {
   }
 
   public removeGrid(): void {
-    console.log('___ remove'); // todo
+    const grid = this.canvas.getObjects().filter((o) => o.name === 'grid');
+    this.canvas.remove(...grid);
   }
 
   private snapToTheGrid(): void {
@@ -72,12 +73,14 @@ export default class CanvasSnapGridService {
     for (let i = 0; i < width / this.gridSize; i += 1) {
       const horizontalLine = new fabric.Line(
         [i * this.gridSize, 0, i * this.gridSize, width], {
-          stroke: '#9a9a9a',
+          stroke: '#7ee3e3',
+          strokeWidth: 0.5,
         },
       );
       const verticalLine = new fabric.Line(
         [0, i * this.gridSize, width, i * this.gridSize], {
-          stroke: '#9a9a9a',
+          stroke: '#7ee3e3',
+          strokeWidth: 0.5,
         },
       );
       // horizontalLine.name = 'horizontalLine';
@@ -89,9 +92,8 @@ export default class CanvasSnapGridService {
     const group = new fabric.Group(separateLines);
     group.selectable = false;
     this.canvas.add(group);
-    // group.opacity = 0;
     group.name = 'grid';
-    // this.canvas.bringForward(group);
+    group.hoverCursor = 'default';
     this.canvas.renderAll();
   }
 }
