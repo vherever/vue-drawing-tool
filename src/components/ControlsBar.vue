@@ -8,7 +8,11 @@
             v-bind:class="isDrawingMode ? 'active' : ''"
             @click="toDrawingMode">drawing mode</button><br>
 
-    <button class="btn btn-info" ref="clear-canvas">Clear</button><br>
+    <button class="btn btn-info" ref="clear-canvas"
+            @click="clearCanvas">Clear all</button><br>
+
+    <button class="btn btn-info" ref="clear-object"
+            @click="clearSelected">Clear selected</button><br>
 
     <div id="drawing-mode-options" style="display: inline-block">
       <label for="drawing-mode-selector">Mode:</label>
@@ -43,19 +47,34 @@ export default class ControlsBar extends Vue {
 
   mounted() {
     console.log('___ ControlsBar', this.$refs); // todo
+    this.listenToEvents();
   }
 
-  toDrawingMode(): void {
+  private toDrawingMode(): void {
     this.emitCanvasMode(true);
   }
 
-  toEditMode(): void {
+  private toEditMode(): void {
     this.emitCanvasMode(false);
+  }
+
+  private clearCanvas(): void {
+    EventBus.$emit('clearCanvasUp', true);
+  }
+
+  private clearSelected(): void {
+    EventBus.$emit('clearSelected', true);
   }
 
   private emitCanvasMode(isDrawingMode: boolean): void {
     EventBus.$emit('isDrawingMode', isDrawingMode);
     this.isDrawingMode = isDrawingMode;
+  }
+
+  private listenToEvents(): void {
+    EventBus.$on('clearCanvasDown', () => {
+      this.isDrawingMode = true;
+    });
   }
 }
 </script>

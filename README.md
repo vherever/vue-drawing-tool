@@ -1,4 +1,4 @@
-# vue-testing
+# vue-drawing-tool
 
 ## Project setup
 ```

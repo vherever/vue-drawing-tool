@@ -26,14 +26,20 @@ export default class Canvas extends Vue {
     this.snapGridInstance = new CanvasSnapGridService(this.canvas);
   }
 
+  private clearCanvas(): void {
+    this.canvas.clear();
+    this.canvas.backgroundColor = '#FFFFFF';
+    this.canvas.isDrawingMode = true;
+    EventBus.$emit('clearCanvasDown', true);
+  }
+
   private initCanvas(): void {
     const canvasRef: HTMLCanvasElement = this.$refs.drawing as HTMLCanvasElement;
     this.canvas = new fabric.Canvas(canvasRef, {
-      backgroundColor: '#FFFFFF',
       isDrawingMode: true,
       selection: true,
     });
-    this.canvas.renderAll();
+    this.clearCanvas();
   }
 
   private removeGrid(): void {
@@ -48,6 +54,16 @@ export default class Canvas extends Vue {
     EventBus.$on('isDrawingMode', (isDrawingMode: boolean) => {
       this.canvas.isDrawingMode = isDrawingMode;
       // this.snapToGrid();
+    });
+
+    EventBus.$on('clearCanvasUp', () => {
+      this.clearCanvas();
+    });
+
+    EventBus.$on('clearSelected', () => {
+      const activeObjects = this.canvas.getActiveObjects();
+      this.canvas.remove(...activeObjects);
+      this.canvas.discardActiveObject();
     });
 
     this.canvas.on('object:moving', (e) => {
