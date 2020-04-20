@@ -17,5 +17,6 @@ module.exports = {
     'class-methods-use-this': 0,
     '@typescript-eslint/no-inferrable-types': 1,
     'lines-between-class-members': 'off',
+    'no-plusplus': 'off'
   },
 };

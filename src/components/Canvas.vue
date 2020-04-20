@@ -1,29 +1,34 @@
 <template>
-  <div class="s_scr__editor_page">
-    <div class="s_scr__canvas_wrapper">
-      <canvas class="s_scr__drawing_canvas" id="drawing" ref="drawing"
-      ></canvas>
-    </div>
+  <div class="s_scr__canvas_wrapper">
+    <canvas class="s_scr__drawing_canvas" id="drawing" ref="drawing"
+    ></canvas>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { fabric } from 'fabric';
 import EventBus from '@/shared/eventBus';
 import CanvasSnapGridService from '@/services/canvas-snap-grid.service';
+import AppService from '@/services/app-service';
 
 @Component
 export default class Canvas extends Vue {
+  @Prop() private canvasFabricRef!: fabric.Canvas;
   private canvas!: fabric.Canvas;
   private gridInitialized: boolean = false;
   private snapGridInstance!: CanvasSnapGridService;
+  private appServiceInstance!: AppService;
 
   mounted() {
-    this.initCanvas();
-    this.setCanvasSize(800, 600);
-    this.listenToEvents();
     this.snapGridInstance = new CanvasSnapGridService(this.canvas);
+    this.appServiceInstance = new AppService();
+    this.initCanvas();
+    this.setCanvasSize(
+      this.appServiceInstance.windowInnerWidth,
+      this.appServiceInstance.windowInnerHeight - 100,
+    );
+    this.listenToEvents();
   }
 
   private clearCanvas(): void {
@@ -39,6 +44,12 @@ export default class Canvas extends Vue {
       isDrawingMode: true,
       selection: true,
     });
+    fabric.Object.prototype.set({
+      transparentCorners: true,
+      cornerColor: '#00FFC4',
+      cornerSize: 8,
+    });
+    this.$emit('canvas-fabric-ref', this.canvas);
     this.clearCanvas();
   }
 
@@ -126,18 +137,14 @@ export default class Canvas extends Vue {
 </script>
 
 <style scoped lang="scss">
-  .s_scr__editor_page {
-    height: 100%;
-    background-color: #212224;
-    .s_scr__canvas_wrapper {
-      height: 100%;
-      display: inline-block;
-      .canvas-container {
-        margin: 0 auto;
-        .s_scr__drawing_canvas {
-          border: 1px solid lightgray;
-        }
-      }
+  .s_scr__canvas_wrapper {
+    background-color: #000000;
+    position: relative;
+    height: calc(100% - 100px);
+    overflow: auto;
+    padding-top: 100px;
+    .s_scr__drawing_canvas {
+      /*border: 3px solid #f1c40f;*/
     }
   }
 </style>

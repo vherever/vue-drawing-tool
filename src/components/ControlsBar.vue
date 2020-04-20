@@ -14,7 +14,7 @@
     <button class="btn btn-info" ref="clear-object"
             @click="clearSelected">Clear selected</button><br>
 
-    <div id="drawing-mode-options" style="display: inline-block">
+    <div id="drawing-mode-options" style="display: none">
       <label for="drawing-mode-selector">Mode:</label>
       <select id="drawing-mode-selector">
         <option>Pencil</option>
@@ -28,21 +28,22 @@
       <input type="color" value="#000000" id="drawing-color"><br>
     </div>
 
-    <div class="s_scr__zoom_controls">
-      <a href="javascript:;" class="zoom_in" id="s_scr__zoom_in">+</a>
-      <a href="javascript:;" class="zom_out" id="s_scr__zoom_out">-</a>
-      <a href="javascript:;" class="reset_zoom" id="s_scr__zoom_reset">reset</a>
-      <span class="zoom_ratio_info" id="s_scr__zoom_ratio">ratio</span>
-    </div>
+    <ZoomControl :canvasFabricRef="canvasFabricRef" />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import EventBus from '@/shared/eventBus';
+import ZoomControl from '@/components/ZoomControl.vue';
 
-@Component
+@Component({
+  components: {
+    ZoomControl,
+  },
+})
 export default class ControlsBar extends Vue {
+  @Prop() private canvasFabricRef!: fabric.Canvas;
   private isDrawingMode: boolean = true;
 
   mounted() {
@@ -80,9 +81,17 @@ export default class ControlsBar extends Vue {
 </script>
 
 <style scoped lang="scss">
-  button {
-    &.active {
-      background-color: #42b983;
+  .s_scr__drawing_controls {
+    background-color: #b4b4b4;
+    position: fixed;
+    width: 100%;
+    z-index: 9999;
+    top: 0;
+    height: 100px;
+    button {
+      &.active {
+        background-color: #42b983;
+      }
     }
   }
 </style>

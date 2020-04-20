@@ -1,9 +1,11 @@
 <template>
-  <div id="app">
-<!--    <img alt="Vue logo" src="./assets/logo.png">-->
-<!--    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>-->
-    <ControlsBar />
-    <Canvas ref="canvas" />
+  <div class="s_scr__editor_main">
+    <ControlsBar v-if="canvasFabricRef"
+                 :canvasFabricRef="canvasFabricRef" />
+    <Canvas ref="canvas" @canvas-fabric-ref="getCanvasFabricRef" />
+      <!--    <img alt="Vue logo" src="./assets/logo.png">-->
+      <!--    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>-->
+
   </div>
 </template>
 
@@ -22,22 +24,39 @@ import ControlsBar from './components/ControlsBar.vue';
   },
 })
 export default class App extends Vue {
-  canvasRef!: HTMLCanvasElement;
+  private canvasRef!: HTMLCanvasElement;
+  private canvasFabricRef: fabric.Canvas | null = null;
 
   mounted() {
     this.canvasRef = (this.$refs.canvas as Vue).$refs.drawing as HTMLCanvasElement;
-    EventBus.$emit('DATA', 'emitted_data');
+  }
+
+  private getCanvasFabricRef(canvas: fabric.Canvas): void {
+    this.canvasFabricRef = canvas;
   }
 }
 </script>
 
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+  html, body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+  }
+  body {
+    overflow-y: hidden;
+  }
+  .s_scr__editor_main {
+    height: 100%;
+    width: 100%;
+    .canvas-container {
+      position: absolute !important;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: 0 auto;
+      margin-top: 100px;
+    }
+  }
 </style>
