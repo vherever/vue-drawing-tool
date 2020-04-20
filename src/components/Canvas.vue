@@ -24,11 +24,11 @@ export default class Canvas extends Vue {
   private canvasClass: string = '';
 
   mounted() {
-    this.snapGridInstance = new CanvasSnapGridService(this.canvas);
     this.appServiceInstance = new AppService();
     this.initCanvas();
     this.setCanvasSize(this.canvasWidth, this.canvasHeight);
     this.listenToEvents();
+    this.snapGridInstance = new CanvasSnapGridService(this.canvas);
   }
 
   private clearCanvas(): void {
