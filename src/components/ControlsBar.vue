@@ -61,6 +61,7 @@ export default class ControlsBar extends Vue {
 
   private clearCanvas(): void {
     EventBus.$emit('clearCanvasUp', true);
+    EventBus.$emit('zoomRatio', 1);
   }
 
   private clearSelected(): void {

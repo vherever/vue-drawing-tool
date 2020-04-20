@@ -19,8 +19,8 @@ export default class ZoomControl extends Vue {
   @Prop() private canvasFabricRef!: fabric.Canvas;
   private readonly zoomRatios: number[] = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
   private currentZoomIndex: number = 3;
+  private defaultZoomPercentage: number = 100;
   private currentZoomPercentage: number | null = null;
-  private defaultZoomPercentage!: number;
 
   mounted() {
     this.currentZoomPercentage = this.defaultZoomPercentage;
@@ -36,6 +36,10 @@ export default class ZoomControl extends Vue {
       case 'in':
         if (++this.currentZoomIndex < this.zoomRatios.length) {
           this.canvasFabricRef.setZoom(this.zoomRatios[this.currentZoomIndex]);
+          EventBus.$emit('zoomRatio', this.zoomRatios[this.currentZoomIndex]);
+          if (this.currentZoomIndex === 3) {
+            this.currentZoomPercentage = 100;
+          }
         } else {
           this.currentZoomIndex = this.zoomRatios.length - 1;
         }
@@ -43,6 +47,10 @@ export default class ZoomControl extends Vue {
       case 'out':
         if (--this.currentZoomIndex >= 0) {
           this.canvasFabricRef.setZoom(this.zoomRatios[this.currentZoomIndex]);
+          EventBus.$emit('zoomRatio', this.zoomRatios[this.currentZoomIndex]);
+          if (this.currentZoomIndex === 3) {
+            this.currentZoomPercentage = 100;
+          }
         } else {
           this.currentZoomIndex = 0;
         }

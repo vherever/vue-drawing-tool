@@ -19,15 +19,14 @@ export default class Canvas extends Vue {
   private gridInitialized: boolean = false;
   private snapGridInstance!: CanvasSnapGridService;
   private appServiceInstance!: AppService;
+  private canvasWidth!: number;
+  private canvasHeight!: number;
 
   mounted() {
     this.snapGridInstance = new CanvasSnapGridService(this.canvas);
     this.appServiceInstance = new AppService();
     this.initCanvas();
-    this.setCanvasSize(
-      this.appServiceInstance.windowInnerWidth,
-      this.appServiceInstance.windowInnerHeight - 100,
-    );
+    this.setCanvasSize(this.canvasWidth, this.canvasHeight);
     this.listenToEvents();
   }
 
@@ -44,6 +43,8 @@ export default class Canvas extends Vue {
       isDrawingMode: true,
       selection: true,
     });
+    this.canvasWidth = this.appServiceInstance.windowInnerWidth;
+    this.canvasHeight = this.appServiceInstance.windowInnerHeight - 100;
     fabric.Object.prototype.set({
       transparentCorners: true,
       cornerColor: '#00FFC4',
@@ -75,6 +76,13 @@ export default class Canvas extends Vue {
       const activeObjects = this.canvas.getActiveObjects();
       this.canvas.remove(...activeObjects);
       this.canvas.discardActiveObject();
+    });
+
+    EventBus.$on('zoomRatio', (zoomRatio: any) => {
+      const canvasWidth: number = this.canvasWidth * zoomRatio;
+      const canvasHeight: number = this.canvasHeight * zoomRatio;
+      this.canvas.setZoom(zoomRatio);
+      this.setCanvasSize(canvasWidth, canvasHeight);
     });
 
     this.canvas.on('object:moving', (e) => {
@@ -141,7 +149,7 @@ export default class Canvas extends Vue {
     background-color: #000000;
     position: relative;
     height: calc(100% - 100px);
-    overflow: auto;
+    overflow: scroll;
     padding-top: 100px;
     .s_scr__drawing_canvas {
       /*border: 3px solid #f1c40f;*/
