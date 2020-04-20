@@ -58,5 +58,11 @@ export default class App extends Vue {
       margin: 0 auto;
       margin-top: 100px;
     }
+    .v-aligned {
+      .canvas-container {
+        top: 100px;
+        margin: auto;
+      }
+    }
   }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="s_scr__canvas_wrapper">
+  <div class="s_scr__canvas_wrapper" v-bind:class="canvasClass">
     <canvas class="s_scr__drawing_canvas" id="drawing" ref="drawing"
     ></canvas>
   </div>
@@ -21,6 +21,7 @@ export default class Canvas extends Vue {
   private appServiceInstance!: AppService;
   private canvasWidth!: number;
   private canvasHeight!: number;
+  private canvasClass: string = '';
 
   mounted() {
     this.snapGridInstance = new CanvasSnapGridService(this.canvas);
@@ -79,6 +80,7 @@ export default class Canvas extends Vue {
     });
 
     EventBus.$on('zoomRatio', (zoomRatio: any) => {
+      this.canvasClass = zoomRatio >= 1 ? '' : 'v-aligned';
       const canvasWidth: number = this.canvasWidth * zoomRatio;
       const canvasHeight: number = this.canvasHeight * zoomRatio;
       this.canvas.setZoom(zoomRatio);
