@@ -1,7 +1,7 @@
 <template>
   <div class="s_scr__zoom_controls" style="display: inline-block">
-    <a href="javascript:;" class="zoom_in" id="s_scr__zoom_in" @click="onZoomClick('in')">+</a>
-    <a href="javascript:;" class="zom_out" id="s_scr__zoom_out" @click="onZoomClick('out')">-</a>
+    <a href="javascript:;" class="c_zoom_in" id="s_scr__zoom_in" @click="onZoomClick('in')"></a>
+    <a href="javascript:;" class="c_zom_out" id="s_scr__zoom_out" @click="onZoomClick('out')"></a>
     <a href="javascript:;" class="reset_zoom" id="s_scr__zoom_reset"
        v-show="showZoomRatio"
        @click="resetZoom()">reset</a>
@@ -80,9 +80,19 @@ export default class ZoomControl extends Vue {
 
 <style scoped lang="scss">
   .s_scr__zoom_controls {
-    .zoom_in {}
-    .zom_out {
-      margin-left: 15px;
+    .c_zoom_in {
+      background: url(./../assets/icons/zoom-in.svg) 2px 1px no-repeat;
+      width: 21px;
+      height: 21px;
+      background-size: 17px 17px;
+      display: inline-block;
+    }
+    .c_zom_out {
+      background: url(./../assets/icons/zoom-out.svg) 2px 1px no-repeat;
+      width: 21px;
+      height: 21px;
+      background-size: 17px 17px;
+      display: inline-block;
     }
     .reset_zoom {
       margin-left: 15px;

@@ -1,18 +1,18 @@
 <template>
   <div class="s_scr__drawing_controls">
-    <button class="" ref="edit-mode"
+    <button class="c_edit" ref="edit-mode"
             v-bind:class="!isDrawingMode ? 'active' : ''"
-            @click="toEditMode">edit mode</button>
+            @click="toEditMode"></button>
 
-    <button class="btn btn-info" ref="drawing-mode"
+    <button class="c_drawing" ref="drawing-mode"
             v-bind:class="isDrawingMode ? 'active' : ''"
-            @click="toDrawingMode">drawing mode</button><br>
+            @click="toDrawingMode"></button><br>
 
-    <button class="btn btn-info" ref="clear-canvas"
-            @click="clearCanvas">Clear all</button><br>
+    <button class="c_clear_canvas" ref="clear-canvas"
+            @click="clearCanvas"></button><br>
 
-    <button class="btn btn-info" ref="clear-object"
-            @click="clearSelected">Clear selected</button><br>
+    <button class="c_clear_object" ref="clear-object"
+            @click="clearSelected"></button><br>
 
     <div id="drawing-mode-options" style="display: none">
       <label for="drawing-mode-selector">Mode:</label>
@@ -90,9 +90,36 @@ export default class ControlsBar extends Vue {
     top: 0;
     height: 100px;
     button {
+      outline: none;
+      border: none;
+      cursor: pointer;
       &.active {
         background-color: #42b983;
       }
+    }
+    .c_edit {
+      background: url(./../assets/icons/cursor.svg) 3px 1px no-repeat;
+      width: 21px;
+      height: 21px;
+      background-size: 17px 17px;
+    }
+    .c_drawing {
+      background: url(./../assets/icons/edit.svg) 2px 1px no-repeat;
+      width: 21px;
+      height: 21px;
+      background-size: 17px 17px;
+    }
+    .c_clear_canvas {
+      background: url(./../assets/icons/trash.svg) 2px 1px no-repeat;
+      width: 21px;
+      height: 21px;
+      background-size: 17px 17px;
+    }
+    .c_clear_object {
+      background: url(./../assets/icons/remove.svg) 2px 1px no-repeat;
+      width: 17px;
+      height: 17px;
+      background-size: 14px 14px;
     }
   }
 </style>
