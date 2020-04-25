@@ -70,7 +70,7 @@ export default class ZoomControl extends Vue {
   }
 
   private listenToEvents(): void {
-    EventBus.$on('clearCanvasDown', () => {
+    EventBus.$on('clearCanvas', () => {
       this.currentZoomPercentage = this.defaultZoomPercentage;
       this.currentZoomIndex = 3;
     });

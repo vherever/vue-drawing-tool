@@ -29,6 +29,8 @@
     </div>
 
     <ZoomControl :canvasFabricRef="canvasFabricRef" />
+
+    <EraserControl :canvasFabricRef="canvasFabricRef" />
   </div>
 </template>
 
@@ -36,10 +38,12 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import EventBus from '@/shared/eventBus';
 import ZoomControl from '@/components/ZoomControl.vue';
+import EraserControl from '@/components/EraserControl.vue';
 
 @Component({
   components: {
     ZoomControl,
+    EraserControl,
   },
 })
 export default class ControlsBar extends Vue {
@@ -48,7 +52,6 @@ export default class ControlsBar extends Vue {
 
   mounted() {
     console.log('___ ControlsBar', this.$refs); // todo
-    this.listenToEvents();
   }
 
   private toDrawingMode(): void {
@@ -60,8 +63,9 @@ export default class ControlsBar extends Vue {
   }
 
   private clearCanvas(): void {
-    EventBus.$emit('clearCanvasUp', true);
+    EventBus.$emit('clearCanvas', true);
     EventBus.$emit('zoomRatio', 1);
+    this.isDrawingMode = true;
   }
 
   private clearSelected(): void {
@@ -71,12 +75,6 @@ export default class ControlsBar extends Vue {
   private emitCanvasMode(isDrawingMode: boolean): void {
     EventBus.$emit('isDrawingMode', isDrawingMode);
     this.isDrawingMode = isDrawingMode;
-  }
-
-  private listenToEvents(): void {
-    EventBus.$on('clearCanvasDown', () => {
-      this.isDrawingMode = true;
-    });
   }
 }
 </script>

@@ -33,9 +33,9 @@ export default class Canvas extends Vue {
 
   private clearCanvas(): void {
     this.canvas.clear();
-    this.canvas.backgroundColor = '#FFFFFF';
+    // this.canvas.backgroundColor = '#FFFFFF';
+    this.canvas.backgroundColor = '#00FFC4';
     this.canvas.isDrawingMode = true;
-    EventBus.$emit('clearCanvasDown', true);
   }
 
   private initCanvas(): void {
@@ -69,7 +69,7 @@ export default class Canvas extends Vue {
       // this.snapToGrid();
     });
 
-    EventBus.$on('clearCanvasUp', () => {
+    EventBus.$on('clearCanvas', () => {
       this.clearCanvas();
     });
 
@@ -116,7 +116,18 @@ export default class Canvas extends Vue {
     });
 
     this.canvas.on('mouse:up', (e) => {
-      // console.log('___ e UP', e); // todo
+      // if using eraser tool - need to clear white path
+      this.canvas.clearContext((this.canvas as any).contextTop);
+    });
+
+    this.canvas.on('mouse:move', (e) => {
+      // this.canvas.renderTop();
+      // console.log('___ e', e); // todo
+      // this.canvas.clearContext((this.canvas as any).contextTop);
+    });
+
+    this.canvas.on('selection:cleared', (e) => {
+      // console.log('___ e selection:cleared', e); // todo
     });
 
     this.canvas.on('mouse:down', () => {
