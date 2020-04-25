@@ -1,10 +1,12 @@
 <template>
   <div class="s_scr__editor_main">
     <ControlsBar v-if="canvasFabricRef"
-                 :canvasFabricRef="canvasFabricRef" />
-    <Canvas ref="canvas" @canvas-fabric-ref="getCanvasFabricRef" />
+                 :canvasFabricRef="canvasFabricRef"
+                 :drawingMode="drawingMode" />
+    <Canvas ref="canvas"
+                @canvas-fabric-ref="getCanvasFabricRef"
+                :drawingMode="drawingMode" />
       <!--    <img alt="Vue logo" src="./assets/logo.png">-->
-      <!--    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>-->
 
   </div>
 </template>
@@ -12,13 +14,11 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import EventBus from '@/shared/eventBus';
-import HelloWorld from './components/HelloWorld.vue';
 import Canvas from './components/Canvas.vue';
 import ControlsBar from './components/ControlsBar.vue';
 
 @Component({
   components: {
-    HelloWorld,
     Canvas,
     ControlsBar,
   },
@@ -26,13 +26,21 @@ import ControlsBar from './components/ControlsBar.vue';
 export default class App extends Vue {
   private canvasRef!: HTMLCanvasElement;
   private canvasFabricRef: fabric.Canvas | null = null;
+  private drawingMode: string = 'freedraw';
 
   mounted() {
     this.canvasRef = (this.$refs.canvas as Vue).$refs.drawing as HTMLCanvasElement;
+    this.listenToEvents();
   }
 
   private getCanvasFabricRef(canvas: fabric.Canvas): void {
     this.canvasFabricRef = canvas;
+  }
+
+  private listenToEvents(): void {
+    EventBus.$on('drawingMode', (drawingMode: string) => {
+      this.drawingMode = drawingMode;
+    });
   }
 }
 </script>

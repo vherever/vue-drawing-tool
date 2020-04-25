@@ -1,11 +1,11 @@
 <template>
   <div class="s_scr__drawing_controls">
     <button class="c_edit" ref="edit-mode"
-            v-bind:class="!isDrawingMode ? 'active' : ''"
+            v-bind:class="drawingMode === 'edit' ? 'active' : ''"
             @click="toEditMode"></button>
 
     <button class="c_drawing" ref="drawing-mode"
-            v-bind:class="isDrawingMode ? 'active' : ''"
+            v-bind:class="drawingMode === 'freedraw' ? 'active' : ''"
             @click="toDrawingMode"></button><br>
 
     <button class="c_clear_canvas" ref="clear-canvas"
@@ -30,7 +30,7 @@
 
     <ZoomControl :canvasFabricRef="canvasFabricRef" />
 
-    <EraserControl :canvasFabricRef="canvasFabricRef" />
+    <EraserControl :canvasFabricRef="canvasFabricRef" :drawingMode="drawingMode" />
   </div>
 </template>
 
@@ -39,6 +39,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import EventBus from '@/shared/eventBus';
 import ZoomControl from '@/components/ZoomControl.vue';
 import EraserControl from '@/components/EraserControl.vue';
+import { fabric } from 'fabric';
 
 @Component({
   components: {
@@ -48,33 +49,42 @@ import EraserControl from '@/components/EraserControl.vue';
 })
 export default class ControlsBar extends Vue {
   @Prop() private canvasFabricRef!: fabric.Canvas;
-  private isDrawingMode: boolean = true;
+  @Prop() private drawingMode!: string;
 
   mounted() {
-    console.log('___ ControlsBar', this.$refs); // todo
+    this.toDrawingMode();
   }
 
   private toDrawingMode(): void {
-    this.emitCanvasMode(true);
+    this.emitCanvasMode('freedraw');
+    this.initDefaultBrush();
+  }
+
+  private initDefaultBrush(): void {
+    // @ts-ignore
+    // eslint-disable-next-line
+    const pencilBrush = new fabric.PencilBrush(this.canvasFabricRef);
+    pencilBrush.width = 2;
+    pencilBrush.color = '#000000';
+    this.canvasFabricRef.freeDrawingBrush = pencilBrush;
   }
 
   private toEditMode(): void {
-    this.emitCanvasMode(false);
+    this.emitCanvasMode('edit');
   }
 
   private clearCanvas(): void {
     EventBus.$emit('clearCanvas', true);
     EventBus.$emit('zoomRatio', 1);
-    this.isDrawingMode = true;
+    this.emitCanvasMode('freedraw');
   }
 
   private clearSelected(): void {
     EventBus.$emit('clearSelected', true);
   }
 
-  private emitCanvasMode(isDrawingMode: boolean): void {
-    EventBus.$emit('isDrawingMode', isDrawingMode);
-    this.isDrawingMode = isDrawingMode;
+  private emitCanvasMode(drawingMode: string): void {
+    EventBus.$emit('drawingMode', drawingMode);
   }
 }
 </script>

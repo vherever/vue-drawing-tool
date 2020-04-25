@@ -1,5 +1,6 @@
 <template>
   <div class="s_scr__canvas_wrapper" v-bind:class="canvasClass">
+    <div v-if="drawingMode"></div>
     <canvas class="s_scr__drawing_canvas" id="drawing" ref="drawing"
     ></canvas>
   </div>
@@ -15,6 +16,7 @@ import AppService from '@/services/app-service';
 @Component
 export default class Canvas extends Vue {
   @Prop() private canvasFabricRef!: fabric.Canvas;
+  @Prop() private drawingMode!: string;
   private canvas!: fabric.Canvas;
   private gridInitialized: boolean = false;
   private snapGridInstance!: CanvasSnapGridService;
@@ -29,6 +31,10 @@ export default class Canvas extends Vue {
     this.setCanvasSize(this.canvasWidth, this.canvasHeight);
     this.listenToEvents();
     this.snapGridInstance = new CanvasSnapGridService(this.canvas);
+  }
+
+  updated() {
+    this.canvas.isDrawingMode = this.drawingMode !== 'edit';
   }
 
   private clearCanvas(): void {
@@ -64,11 +70,6 @@ export default class Canvas extends Vue {
   }
 
   private listenToEvents(): void {
-    EventBus.$on('isDrawingMode', (isDrawingMode: boolean) => {
-      this.canvas.isDrawingMode = isDrawingMode;
-      // this.snapToGrid();
-    });
-
     EventBus.$on('clearCanvas', () => {
       this.clearCanvas();
     });
