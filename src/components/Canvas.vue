@@ -34,13 +34,12 @@ export default class Canvas extends Vue {
   }
 
   updated() {
-    this.canvas.isDrawingMode = this.drawingMode !== 'edit';
+    this.canvas.isDrawingMode = !(this.drawingMode === 'edit' || this.drawingMode === 'rectangle');
   }
 
   private clearCanvas(): void {
     this.canvas.clear();
-    // this.canvas.backgroundColor = '#FFFFFF';
-    this.canvas.backgroundColor = '#00FFC4';
+    this.canvas.backgroundColor = '#FFFFFF';
     this.canvas.isDrawingMode = true;
   }
 

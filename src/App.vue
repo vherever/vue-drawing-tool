@@ -26,7 +26,7 @@ import ControlsBar from './components/ControlsBar.vue';
 export default class App extends Vue {
   private canvasRef!: HTMLCanvasElement;
   private canvasFabricRef: fabric.Canvas | null = null;
-  private drawingMode: string = 'freedraw';
+  private drawingMode: string = 'rectangle';
 
   mounted() {
     this.canvasRef = (this.$refs.canvas as Vue).$refs.drawing as HTMLCanvasElement;
@@ -39,6 +39,12 @@ export default class App extends Vue {
 
   private listenToEvents(): void {
     EventBus.$on('drawingMode', (drawingMode: string) => {
+      console.log('___ drawingMode', drawingMode); // todo
+      if (this.canvasFabricRef) {
+        this.canvasFabricRef.off('mouse:down');
+        this.canvasFabricRef.off('mouse:up');
+        this.canvasFabricRef.off('mouse:move');
+      }
       this.drawingMode = drawingMode;
     });
   }

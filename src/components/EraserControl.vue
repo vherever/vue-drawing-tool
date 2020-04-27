@@ -9,7 +9,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { fabric } from 'fabric';
-import EraserBrush from '@/plugins/eraser-plugin';
+import EraserBrush from '@/plugins/eraser-brush';
 import EventBus from '@/shared/eventBus';
 
 @Component

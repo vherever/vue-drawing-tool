@@ -6,8 +6,15 @@
 
     <button class="c_drawing" ref="drawing-mode"
             v-bind:class="drawingMode === 'freedraw' ? 'active' : ''"
-            @click="toDrawingMode"></button><br>
+            @click="toDrawingMode"></button>
 
+    <button class="c_rectangle" ref="rectangle-mode"
+            style="display: inline-block"
+            v-bind:class="drawingMode === 'rectangle' ? 'active' : ''"
+            @click="toRectangleMode"
+    >rect</button>
+
+    <br>
     <button class="c_clear_canvas" ref="clear-canvas"
             @click="clearCanvas"></button><br>
 
@@ -40,6 +47,7 @@ import EventBus from '@/shared/eventBus';
 import ZoomControl from '@/components/ZoomControl.vue';
 import EraserControl from '@/components/EraserControl.vue';
 import { fabric } from 'fabric';
+import RectangleBrush from '@/plugins/rectangle-brush';
 
 @Component({
   components: {
@@ -58,6 +66,11 @@ export default class ControlsBar extends Vue {
   private toDrawingMode(): void {
     this.emitCanvasMode('freedraw');
     this.initDefaultBrush();
+  }
+
+  private toRectangleMode(): void {
+    this.emitCanvasMode('rectangle');
+    const rect = new RectangleBrush(this.canvasFabricRef);
   }
 
   private initDefaultBrush(): void {
