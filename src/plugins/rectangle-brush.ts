@@ -10,7 +10,6 @@ export default class RectangleBrush {
   }
 
   private init(): void {
-    console.log('___ init'); // todo
     const fabricCanvas = this.canvas;
     fabricCanvas.off('mouse:over');
     uninstall();
@@ -19,8 +18,8 @@ export default class RectangleBrush {
       drawRect: true,
       onlyOne: false,
       rectProps: {
-        stroke: 'red',
-        strokeWidth: 1,
+        stroke: '#000000',
+        strokeWidth: 2,
         fill: '',
         selectable: false,
       }

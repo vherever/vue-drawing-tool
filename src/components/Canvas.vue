@@ -56,6 +56,7 @@ export default class Canvas extends Vue {
       transparentCorners: true,
       cornerColor: '#00FFC4',
       cornerSize: 8,
+      borderColor: 'lightgrey',
     });
     this.$emit('canvas-fabric-ref', this.canvas);
     this.clearCanvas();
@@ -103,66 +104,67 @@ export default class Canvas extends Vue {
         this.canvas.off('mouse:down');
         this.canvas.off('mouse:up');
         this.canvas.off('mouse:move');
+
+        this.canvas.on('object:moving', (e) => {
+          // console.log('___ moving', e.target); // todo
+        });
+
+        this.canvas.on('object:rotating', (e: any) => {
+          // console.log('___ rotating', e.target); // todo
+        });
+
+        this.canvas.on('path:created', (e: any) => {
+          // console.log('___ e path created', e); // todo
+        });
+
+        this.canvas.on('mouse:up', (e) => {
+          // if using eraser tool - need to clear white path
+          this.canvas.clearContext((this.canvas as any).contextTop);
+        });
+
+        this.canvas.on('mouse:move', (e) => {
+          // this.canvas.renderTop();
+          // console.log('___ e', e); // todo
+          // this.canvas.clearContext((this.canvas as any).contextTop);
+        });
+
+        this.canvas.on('selection:cleared', (e) => {
+          // console.log('___ e selection:cleared', e); // todo
+        });
+
+        this.canvas.on('mouse:down', () => {
+          this.canvas.clearContext((this.canvas as any).contextTop);
+        });
+
+        this.canvas.on('mouse:out', (e) => {
+          if (e.target) {
+            this.canvas.clearContext((this.canvas as any).contextTop);
+          }
+        });
       }
 
       if (drawingMode === 'edit') {
-        // this.canvas.selection = true;
+        this.canvas.selection = true;
         this.canvas.forEachObject((object: any) => {
           object.selectable = true;
         });
-      }
-    });
 
-    this.canvas.on('object:moving', (e) => {
-      // console.log('___ moving', e.target); // todo
-    });
-
-    this.canvas.on('object:rotating', (e: any) => {
-      // console.log('___ rotating', e.target); // todo
-    });
-
-    this.canvas.on('mouse:over', (e: any) => {
-      const activeObj = this.canvas.getActiveObject();
-      if (e.target && activeObj) {
-        const activeObjectId: string = activeObj.matrixCache && activeObj.matrixCache.key;
-
-        if (e.target.matrixCache && e.target.matrixCache.key) {
-          if (activeObjectId !== e.target.matrixCache.key) {
-            // eslint-disable-next-line
-            (e.target as any)._renderControls((this.canvas as any).contextTop, {
-              hasControls: false,
-            });
+        this.canvas.on('mouse:over', (e: any) => {
+          // console.log('___ e over', e); // todo
+          const activeObj = this.canvas.getActiveObject();
+          if (e.target) {
+            const activeObjectId: string = activeObj && activeObj.matrixCache
+              && activeObj.matrixCache.key;
+            if (e.target.matrixCache && e.target.matrixCache.key) {
+              if (activeObjectId !== e.target.matrixCache.key) {
+                // eslint-disable-next-line
+                (e.target as any)._renderControls((this.canvas as any).contextTop, {
+                  hasControls: false,
+                });
+              }
+            }
           }
-        }
-      }
-    });
-
-    this.canvas.on('path:created', (e: any) => {
-      // console.log('___ e path created', e); // todo
-    });
-
-    this.canvas.on('mouse:up', (e) => {
-      // if using eraser tool - need to clear white path
-      this.canvas.clearContext((this.canvas as any).contextTop);
-    });
-
-    this.canvas.on('mouse:move', (e) => {
-      // this.canvas.renderTop();
-      // console.log('___ e', e); // todo
-      // this.canvas.clearContext((this.canvas as any).contextTop);
-    });
-
-    this.canvas.on('selection:cleared', (e) => {
-      // console.log('___ e selection:cleared', e); // todo
-    });
-
-    this.canvas.on('mouse:down', () => {
-      this.canvas.clearContext((this.canvas as any).contextTop);
-    });
-
-    this.canvas.on('mouse:out', (e) => {
-      if (e.target) {
-        this.canvas.clearContext((this.canvas as any).contextTop);
+        });
       }
     });
   }
