@@ -40,11 +40,6 @@ export default class App extends Vue {
   private listenToEvents(): void {
     EventBus.$on('drawingMode', (drawingMode: string) => {
       console.log('___ drawingMode', drawingMode); // todo
-      if (this.canvasFabricRef) {
-        this.canvasFabricRef.off('mouse:down');
-        this.canvasFabricRef.off('mouse:up');
-        this.canvasFabricRef.off('mouse:move');
-      }
       this.drawingMode = drawingMode;
     });
   }

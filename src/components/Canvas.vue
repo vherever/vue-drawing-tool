@@ -47,8 +47,9 @@ export default class Canvas extends Vue {
     const canvasRef: HTMLCanvasElement = this.$refs.drawing as HTMLCanvasElement;
     this.canvas = new fabric.Canvas(canvasRef, {
       isDrawingMode: true,
-      selection: true,
+      selection: false,
     });
+    this.canvas.hoverCursor = 'default';
     this.canvasWidth = this.appServiceInstance.windowInnerWidth;
     this.canvasHeight = this.appServiceInstance.windowInnerHeight - 100;
     fabric.Object.prototype.set({
@@ -85,6 +86,31 @@ export default class Canvas extends Vue {
       const canvasHeight: number = this.canvasHeight * zoomRatio;
       this.canvas.setZoom(zoomRatio);
       this.setCanvasSize(canvasWidth, canvasHeight);
+    });
+
+    EventBus.$on('drawingMode', (drawingMode: string) => {
+      console.log('___ drawingMode123', drawingMode); // todo
+      // disable selection
+      this.canvas.forEachObject((object: any) => {
+        object.selectable = false;
+      });
+
+      // clear selection
+      this.canvas.discardActiveObject();
+      this.canvas.requestRenderAll();
+
+      if (this.canvas) {
+        this.canvas.off('mouse:down');
+        this.canvas.off('mouse:up');
+        this.canvas.off('mouse:move');
+      }
+
+      if (drawingMode === 'edit') {
+        // this.canvas.selection = true;
+        this.canvas.forEachObject((object: any) => {
+          object.selectable = true;
+        });
+      }
     });
 
     this.canvas.on('object:moving', (e) => {

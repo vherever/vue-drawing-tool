@@ -18,6 +18,7 @@ module.exports = {
     '@typescript-eslint/no-inferrable-types': 1,
     'lines-between-class-members': 'off',
     'no-plusplus': 'off',
-    '@typescript-eslint/ban-ts-ignore': 'off'
+    '@typescript-eslint/ban-ts-ignore': 'off',
+    'no-param-reassign': 0
   },
 };
