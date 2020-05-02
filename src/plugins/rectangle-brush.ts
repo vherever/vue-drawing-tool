@@ -1,11 +1,14 @@
 /*eslint-disable */
 import { fabric } from 'fabric';
+import ObjectControlsHelper from '@/plugins/object-controls-helper';
 
 export default class RectangleBrush {
-  private canvas: any;
+  private readonly canvas: any;
+  private objectControlsHelper!: ObjectControlsHelper;
 
   constructor(canvas: any) {
     this.canvas = canvas;
+    this.objectControlsHelper = new ObjectControlsHelper();
     this.init();
   }
 
@@ -22,6 +25,7 @@ export default class RectangleBrush {
         strokeWidth: 2,
         fill: '',
         selectable: false,
+        id: this.objectControlsHelper.generateGuid(),
       }
     }
     function onMouseDown(e: any) {
