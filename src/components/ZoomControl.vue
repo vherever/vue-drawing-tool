@@ -81,14 +81,14 @@ export default class ZoomControl extends Vue {
 <style scoped lang="scss">
   .s_scr__zoom_controls {
     .c_zoom_in {
-      background: url(./../assets/icons/zoom-in.svg) 2px 1px no-repeat;
+      background: url(../../public/assets/icons/zoom-in.svg) 2px 1px no-repeat;
       width: 21px;
       height: 21px;
       background-size: 17px 17px;
       display: inline-block;
     }
     .c_zom_out {
-      background: url(./../assets/icons/zoom-out.svg) 2px 1px no-repeat;
+      background: url(../../public/assets/icons/zoom-out.svg) 2px 1px no-repeat;
       width: 21px;
       height: 21px;
       background-size: 17px 17px;

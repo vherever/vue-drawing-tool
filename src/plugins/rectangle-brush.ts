@@ -1,5 +1,6 @@
 /*eslint-disable */
-import { fabric } from 'fabric';
+// import { fabric } from 'fabric';
+export declare const fabric: any;
 import ObjectControlsHelper from '@/plugins/object-controls-helper';
 
 export default class RectangleBrush {

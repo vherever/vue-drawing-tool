@@ -8,9 +8,11 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { fabric } from 'fabric';
+// import { fabric } from 'fabric';
 import EraserBrush from '@/plugins/eraser-brush';
 import EventBus from '@/shared/eventBus';
+
+declare const fabric: any;
 
 @Component
 export default class EraserControl extends Vue {
@@ -47,7 +49,7 @@ export default class EraserControl extends Vue {
 
 <style scoped lang="scss">
   .c_eraser {
-    background: url(./../assets/icons/eraser.svg) 2px 1px no-repeat;
+    background: url(../../public/assets/icons/eraser.svg) 2px 1px no-repeat;
     display: inline-block;
     width: 21px;
     height: 21px;

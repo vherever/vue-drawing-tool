@@ -1,5 +1,6 @@
 /*eslint-disable */
-import { fabric } from 'fabric';
+// import { fabric } from 'fabric';
+export declare const fabric: any;
 
 const ErasedGroup = fabric.util.createClass(fabric.Group, {
   original: null,
@@ -86,7 +87,7 @@ const EraserBrush = fabric.util.createClass(fabric.PencilBrush, {
       const newData = newPath.toDataURL({
         withoutTransform: true
       });
-      fabric.Image.fromURL(newData, (fabricImage) => {
+      fabric.Image.fromURL(newData, (fabricImage: any) => {
         fabricImage.set({
           left: left,
           top: top,

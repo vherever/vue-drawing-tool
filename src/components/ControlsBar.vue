@@ -46,8 +46,9 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import EventBus from '@/shared/eventBus';
 import ZoomControl from '@/components/ZoomControl.vue';
 import EraserControl from '@/components/EraserControl.vue';
-import { fabric } from 'fabric';
 import RectangleBrush from '@/plugins/rectangle-brush';
+// import { fabric } from 'fabric';
+export declare const fabric: any;
 
 @Component({
   components: {
@@ -119,25 +120,25 @@ export default class ControlsBar extends Vue {
       }
     }
     .c_edit {
-      background: url(./../assets/icons/cursor.svg) 3px 1px no-repeat;
+      background: url(../../public/assets/icons/cursor.svg) 3px 1px no-repeat;
       width: 21px;
       height: 21px;
       background-size: 17px 17px;
     }
     .c_drawing {
-      background: url(./../assets/icons/edit.svg) 2px 1px no-repeat;
+      background: url(../../public/assets/icons/edit.svg) 2px 1px no-repeat;
       width: 21px;
       height: 21px;
       background-size: 17px 17px;
     }
     .c_clear_canvas {
-      background: url(./../assets/icons/trash.svg) 2px 1px no-repeat;
+      background: url(../../public/assets/icons/trash.svg) 2px 1px no-repeat;
       width: 21px;
       height: 21px;
       background-size: 17px 17px;
     }
     .c_clear_object {
-      background: url(./../assets/icons/remove.svg) 2px 1px no-repeat;
+      background: url(../../public/assets/icons/remove.svg) 2px 1px no-repeat;
       width: 17px;
       height: 17px;
       background-size: 14px 14px;

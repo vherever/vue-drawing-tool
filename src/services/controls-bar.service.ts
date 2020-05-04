@@ -1,4 +1,5 @@
-import { fabric } from 'fabric';
+// import { fabric } from 'fabric';
+export declare const fabric: any;
 
 export default class ControlsBarService {
   private readonly canvas!: fabric.Canvas;
