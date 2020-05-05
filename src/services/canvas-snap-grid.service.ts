@@ -70,7 +70,7 @@ export default class CanvasSnapGridService {
 
   private drawGrid(): void {
     const width = this.canvas.getWidth();
-    const separateLines = [];
+    const separateLines: any = [];
     for (let i = 0; i < width / this.gridSize; i += 1) {
       const horizontalLine = new fabric.Line(
         [i * this.gridSize, 0, i * this.gridSize, width], {

@@ -12,8 +12,8 @@ const ErasedGroup = fabric.util.createClass(fabric.Group, {
   },
 
   _calcBounds: function (onlyWidthHeight: any) {
-    const aX = [],
-      aY = [],
+    const aX: any = [],
+      aY: any = [],
       props = ['tr', 'br', 'bl', 'tl'],
       jLen = props.length,
       ignoreZoom = true;

@@ -55,6 +55,9 @@ export default class App extends Vue {
   body {
     overflow-y: hidden;
   }
+  a {
+    text-decoration: none;
+  }
   .s_scr__editor_main {
     height: 100%;
     width: 100%;

@@ -19,6 +19,7 @@ module.exports = {
     'lines-between-class-members': 'off',
     'no-plusplus': 'off',
     '@typescript-eslint/ban-ts-ignore': 'off',
-    'no-param-reassign': 0
+    'no-param-reassign': 0,
+    '@typescript-eslint/no-var-requires': false
   },
 };

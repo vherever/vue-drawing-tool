@@ -16,6 +16,19 @@
       >rect
       </button>
 
+      <div class="c_color_wrapper">
+        <button class="c_color"
+                @click="openColorPanel"
+                v-bind:style="'background-color:' + currentColor"
+        ></button>
+        <DropdownPanel v-if="colorPanelIsOpened"
+                       @currentColor="currentColorReceived"
+                       v-click-outside="onClickOutside"
+                       mode="palette"
+                       :selectedColor="currentColor"
+                       :items="colors"></DropdownPanel>
+      </div>
+
       <button class="c_clear_canvas" ref="clear-canvas"
               @click="clearCanvas"></button>
 
@@ -49,18 +62,53 @@ import EventBus from '@/shared/eventBus';
 import ZoomControl from '@/components/ZoomControl.vue';
 import EraserControl from '@/components/EraserControl.vue';
 import RectangleBrush from '@/plugins/rectangle-brush';
+import DropdownPanel from '@/components/DropdownPanel.vue';
 // import { fabric } from 'fabric';
+
+const vClickOutside = require('v-click-outside');
+
+Vue.use(vClickOutside);
+
 export declare const fabric: any;
 
 @Component({
   components: {
     ZoomControl,
     EraserControl,
+    DropdownPanel,
+  },
+  directives: {
+    clickOutside: vClickOutside.directive,
   },
 })
 export default class ControlsBar extends Vue {
   @Prop() private canvasFabricRef!: fabric.Canvas;
   @Prop() private drawingMode!: string;
+
+  private currentColor: string = '#3498db';
+  private colorPanelIsOpened: boolean = false;
+  private colors: any[] = [
+    { id: '1abc9c', c: '#1abc9c', n: 'TURQUOISE' },
+    { id: '16a085', c: '#16a085', n: 'GREEN SEA' },
+    { id: '2ecc71', c: '#2ecc71', n: 'EMERALD' },
+    { id: '27ae60', c: '#27ae60', n: 'NEPHRITIS' },
+    { id: 'f1c40f', c: '#f1c40f', n: 'SUN FLOWER' },
+    { id: 'f39c12', c: '#f39c12', n: 'ORANGE' },
+    { id: 'e67e22', c: '#e67e22', n: 'CARROT' },
+    { id: 'd35400', c: '#d35400', n: 'PUMPKIN' },
+    { id: '3498db', c: '#3498db', n: 'PETER RIVER' },
+    { id: '2980b9', c: '#2980b9', n: 'BELIZE HOLE' },
+    { id: 'e74c3c', c: '#e74c3c', n: 'ALIZARIN' },
+    { id: 'c0392b', c: '#c0392b', n: 'POMEGRANATE' },
+    { id: '9b59b6', c: '#9b59b6', n: 'AMETHYST' },
+    { id: '8e44ad', c: '#8e44ad', n: 'WISTERIA' },
+    { id: '34495e', c: '#34495e', n: 'WET ASPHALT' },
+    { id: '2c3e50', c: '#2c3e50', n: 'MIDNIGHT BLUE' },
+    { id: 'ecf0f1', c: '#ecf0f1', n: 'CLOUDS' },
+    { id: 'bdc3c7', c: '#bdc3c7', n: 'SILVER' },
+    { id: '95a5a6', c: '#95a5a6', n: 'CONCRETE' },
+    { id: '7f8c8d', c: '#7f8c8d', n: 'ASBESTOS' },
+  ];
 
   mounted() {
     this.toDrawingMode();
@@ -81,7 +129,7 @@ export default class ControlsBar extends Vue {
     // eslint-disable-next-line
     const pencilBrush = new fabric.PencilBrush(this.canvasFabricRef);
     pencilBrush.width = 2;
-    pencilBrush.color = '#000000';
+    pencilBrush.color = this.currentColor;
     this.canvasFabricRef.freeDrawingBrush = pencilBrush;
   }
 
@@ -101,6 +149,21 @@ export default class ControlsBar extends Vue {
 
   private emitCanvasMode(drawingMode: string): void {
     EventBus.$emit('drawingMode', drawingMode);
+  }
+
+  private openColorPanel(): void {
+    this.colorPanelIsOpened = !this.colorPanelIsOpened;
+  }
+
+  private onClickOutside(): void {
+    this.colorPanelIsOpened = false;
+  }
+
+  private currentColorReceived(color: string): void {
+    this.currentColor = color;
+    // this.$emit('currentColor', color);
+    this.canvasFabricRef.freeDrawingBrush.color = color;
+    this.colorPanelIsOpened = false;
   }
 }
 </script>
@@ -150,6 +213,14 @@ export default class ControlsBar extends Vue {
       width: 17px;
       height: 17px;
       background-size: 14px 14px;
+    }
+    .c_color_wrapper {
+      display: inline-block;
+      position: relative;
+      .c_color {
+        width: 24px;
+        height: 24px;
+      }
     }
   }
 </style>
