@@ -1,5 +1,7 @@
 /*eslint-disable */
 // import { fabric } from 'fabric';
+import EventBus from '@/shared/eventBus';
+
 export declare const fabric: any;
 import ObjectControlsHelper from '@/plugins/object-controls-helper';
 
@@ -14,6 +16,11 @@ export default class RectangleBrush {
   }
 
   private init(): void {
+    let zoomRatio = 1;
+    EventBus.$on('zoomRatio', (zoom: number) => {
+      zoomRatio = zoom;
+    });
+
     const fabricCanvas = this.canvas;
     fabricCanvas.off('mouse:over');
     uninstall();
@@ -59,13 +66,14 @@ export default class RectangleBrush {
         bounds.height = pointer.y - initialPos.y
         bounds.y = initialPos.y
       }
-      rect.left = bounds.x
-      rect.top = bounds.y
-      rect.width = bounds.width
-      rect.height = bounds.height
+      rect.left = bounds.x / zoomRatio
+      rect.top = bounds.y / zoomRatio
+      rect.width = bounds.width / zoomRatio
+      rect.height = bounds.height / zoomRatio
       rect.dirty = true
       fabricCanvas.requestRenderAllBound()
       // fabricCanvas.requestRenderAll()
+      console.log('___ bounds', bounds); // todo
     }
     function onMouseMove(e: any) {
       if (!dragging || !freeDrawing) {
@@ -105,6 +113,6 @@ export default class RectangleBrush {
       fabricCanvas.off('mouse:up', onMouseUp);
     }
 
-    freeDrawing && install()
+    freeDrawing && install();
   }
 }

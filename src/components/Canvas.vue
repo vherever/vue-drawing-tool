@@ -132,8 +132,8 @@ export default class Canvas extends Vue {
 
         this.canvas.on('mouse:up', (e: any) => {
           // if using eraser tool - need to clear white path
-          this.canvas.clearContext((this.canvas as any).contextTop);
-          this.canvas.requestRenderAll();
+          // this.canvas.clearContext((this.canvas as any).contextTop);
+          // this.canvas.requestRenderAll();
         });
 
         this.canvas.on('mouse:move', (e: any) => {

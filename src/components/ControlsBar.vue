@@ -1,43 +1,45 @@
 <template>
   <div class="s_scr__drawing_controls">
-    <button class="c_edit" ref="edit-mode"
-            v-bind:class="drawingMode === 'edit' ? 'active' : ''"
-            @click="toEditMode"></button>
+    <div class="s_scr_controls_inner">
+      <button class="c_edit" ref="edit-mode"
+              v-bind:class="drawingMode === 'edit' ? 'active' : ''"
+              @click="toEditMode"></button>
 
-    <button class="c_drawing" ref="drawing-mode"
-            v-bind:class="drawingMode === 'freedraw' ? 'active' : ''"
-            @click="toDrawingMode"></button>
+      <button class="c_drawing" ref="drawing-mode"
+              v-bind:class="drawingMode === 'freedraw' ? 'active' : ''"
+              @click="toDrawingMode"></button>
 
-    <button class="c_rectangle" ref="rectangle-mode"
-            style="display: inline-block"
-            v-bind:class="drawingMode === 'rectangle' ? 'active' : ''"
-            @click="toRectangleMode"
-    >rect</button>
+      <button class="c_rectangle" ref="rectangle-mode"
+              style="display: inline-block"
+              v-bind:class="drawingMode === 'rectangle' ? 'active' : ''"
+              @click="toRectangleMode"
+      >rect
+      </button>
 
-    <br>
-    <button class="c_clear_canvas" ref="clear-canvas"
-            @click="clearCanvas"></button><br>
+      <button class="c_clear_canvas" ref="clear-canvas"
+              @click="clearCanvas"></button>
 
-    <button class="c_clear_object" ref="clear-object"
-            @click="clearSelected"></button><br>
+      <button class="c_clear_object" ref="clear-object"
+              @click="clearSelected"></button>
 
-    <div id="drawing-mode-options" style="display: none">
-      <label for="drawing-mode-selector">Mode:</label>
-      <select id="drawing-mode-selector">
-        <option>Pencil</option>
-      </select><br>
+      <div id="drawing-mode-options" style="display: none">
+        <label for="drawing-mode-selector">Mode:</label>
+        <select id="drawing-mode-selector">
+          <option>Pencil</option>
+        </select><br>
 
-      <label for="drawing-line-width">Line width:</label>
-      <span class="info">1</span>
-      <input type="range" value="1" min="0" max="150" id="drawing-line-width"><br>
+        <label for="drawing-line-width">Line width:</label>
+        <span class="info">1</span>
+        <input type="range" value="1" min="0" max="150" id="drawing-line-width"><br>
 
-      <label for="drawing-color">Line color:</label>
-      <input type="color" value="#000000" id="drawing-color"><br>
+        <label for="drawing-color">Line color:</label>
+        <input type="color" value="#000000" id="drawing-color"><br>
+      </div>
+
+      <ZoomControl :canvasFabricRef="canvasFabricRef"/>
+
+      <EraserControl :canvasFabricRef="canvasFabricRef" :drawingMode="drawingMode"/>
     </div>
-
-    <ZoomControl :canvasFabricRef="canvasFabricRef" />
-
-    <EraserControl :canvasFabricRef="canvasFabricRef" :drawingMode="drawingMode" />
   </div>
 </template>
 
@@ -105,6 +107,10 @@ export default class ControlsBar extends Vue {
 
 <style scoped lang="scss">
   .s_scr__drawing_controls {
+    text-align: center;
+    .s_scr_controls_inner {
+      display: inline-block;
+    }
     background-color: #b4b4b4;
     position: fixed;
     width: 100%;
@@ -120,12 +126,14 @@ export default class ControlsBar extends Vue {
       }
     }
     .c_edit {
+      display: inline-block;
       background: url(../../public/assets/icons/cursor.svg) 3px 1px no-repeat;
       width: 21px;
       height: 21px;
       background-size: 17px 17px;
     }
     .c_drawing {
+      display: inline-block;
       background: url(../../public/assets/icons/edit.svg) 2px 1px no-repeat;
       width: 21px;
       height: 21px;
