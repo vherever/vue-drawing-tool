@@ -7,10 +7,12 @@ import ObjectControlsHelper from '@/plugins/object-controls-helper';
 
 export default class RectangleBrush {
   private readonly canvas: any;
+  private readonly color: string;
   private objectControlsHelper!: ObjectControlsHelper;
 
-  constructor(canvas: any) {
+  constructor(canvas: any, color: string) {
     this.canvas = canvas;
+    this.color = color;
     this.objectControlsHelper = new ObjectControlsHelper();
     this.init();
   }
@@ -29,9 +31,9 @@ export default class RectangleBrush {
       drawRect: true,
       onlyOne: false,
       rectProps: {
-        stroke: '#000000',
+        stroke: this.color,
         strokeWidth: 2,
-        fill: '',
+        fill: 'transparent',
         selectable: false,
         id: this.objectControlsHelper.generateGuid(),
       }
@@ -73,7 +75,6 @@ export default class RectangleBrush {
       rect.dirty = true
       fabricCanvas.requestRenderAllBound()
       // fabricCanvas.requestRenderAll()
-      console.log('___ bounds', bounds); // todo
     }
     function onMouseMove(e: any) {
       if (!dragging || !freeDrawing) {

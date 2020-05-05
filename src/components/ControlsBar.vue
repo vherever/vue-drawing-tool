@@ -121,7 +121,6 @@ export default class ControlsBar extends Vue {
 
   private toRectangleMode(): void {
     this.emitCanvasMode('rectangle');
-    const rect = new RectangleBrush(this.canvasFabricRef);
   }
 
   private initDefaultBrush(): void {
@@ -149,6 +148,7 @@ export default class ControlsBar extends Vue {
 
   private emitCanvasMode(drawingMode: string): void {
     EventBus.$emit('drawingMode', drawingMode);
+    this.createRectangleBrushInstance(drawingMode);
   }
 
   private openColorPanel(): void {
@@ -159,8 +159,18 @@ export default class ControlsBar extends Vue {
     this.colorPanelIsOpened = false;
   }
 
+  private createRectangleBrushInstance(drawingMode: string): void {
+    if (drawingMode === 'rectangle') {
+      const rect = new RectangleBrush(
+        this.canvasFabricRef,
+        this.currentColor,
+      );
+    }
+  }
+
   private currentColorReceived(color: string): void {
     this.currentColor = color;
+    this.createRectangleBrushInstance(this.drawingMode);
     // this.$emit('currentColor', color);
     this.canvasFabricRef.freeDrawingBrush.color = color;
     this.colorPanelIsOpened = false;
