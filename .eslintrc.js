@@ -20,6 +20,6 @@ module.exports = {
     'no-plusplus': 'off',
     '@typescript-eslint/ban-ts-ignore': 'off',
     'no-param-reassign': 0,
-    '@typescript-eslint/no-var-requires': false
+    '@typescript-eslint/no-var-requires': 0
   },
 };

@@ -1,5 +1,5 @@
 <template>
-  <div class="s_scr__dd_panel" v-bind:class="mode">
+  <div class="s_scr__dd_panel palette">
     <div v-for="(item) in items" :key="item.id"
          class="s__scr_dd_panel_item"
          :style="'background-color:' + item.c"
@@ -17,8 +17,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
-export default class DropdownPanel extends Vue {
-  @Prop() private mode!: string;
+export default class DropdownColorPanel extends Vue {
   @Prop() private items!: any[];
   @Prop() selectedColor!: string;
 
@@ -30,11 +29,6 @@ export default class DropdownPanel extends Vue {
 
 <style scoped lang="scss">
   .s_scr__dd_panel {
-    padding: 5px 5px;
-    background-color: #ffffff;
-    position: absolute;
-    border: 1px solid #b7b7b7;
-    border-radius: 3px;
     &.palette {
       width: 182px;
       text-align: left;

@@ -52,6 +52,9 @@ export default class App extends Vue {
     margin: 0;
     height: 100%;
   }
+  * {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+  }
   body {
     overflow-y: hidden;
   }
@@ -76,5 +79,12 @@ export default class App extends Vue {
         margin: auto;
       }
     }
+  }
+  .s_scr__dd_panel {
+    padding: 5px 5px;
+    background-color: #ffffff;
+    position: absolute;
+    border: 1px solid #b7b7b7;
+    border-radius: 3px;
   }
 </style>

@@ -216,6 +216,7 @@ export default class Canvas extends Vue {
         });
       }
       if (drawingMode === 'edit') {
+        this.canvas.hoverCursor = 'move';
         this.canvas.selection = true;
         this.canvas.forEachObject((object: any) => {
           object.selectable = true;
@@ -248,6 +249,10 @@ export default class Canvas extends Vue {
             }
           }
         });
+      } else {
+        this.canvas.selection = false;
+        this.canvas.off('mouse:over');
+        this.canvas.hoverCursor = 'default';
       }
     });
   }

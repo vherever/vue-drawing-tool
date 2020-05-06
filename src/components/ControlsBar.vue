@@ -21,12 +21,12 @@
                 @click="openColorPanel"
                 v-bind:style="'background-color:' + currentColor"
         ></button>
-        <DropdownPanel v-if="colorPanelIsOpened"
+        <DropdownColorPanel v-if="colorPanelIsOpened"
                        @currentColor="currentColorReceived"
                        v-click-outside="onClickOutside"
-                       mode="palette"
                        :selectedColor="currentColor"
-                       :items="colors"></DropdownPanel>
+                       :items="colors"
+        ></DropdownColorPanel>
       </div>
 
       <button class="c_clear_canvas" ref="clear-canvas"
@@ -52,6 +52,20 @@
       <ZoomControl :canvasFabricRef="canvasFabricRef"/>
 
       <EraserControl :canvasFabricRef="canvasFabricRef" :drawingMode="drawingMode"/>
+
+      <div class="s_scr__line_width_wrapper">
+        <div class="s_scr__line_width_inner">
+          <button class="c_line_width"
+                  @click="openLineWidthPanel"
+          >{{ currentLineWidth }}</button>
+          <div>px</div>
+        </div>
+        <DropdownLineWidthPanel v-if="lineWidthPanelIsOpened"
+                                v-click-outside="onClickOutside"
+                                @currentLineWidth="currentLineWidthReceived"
+                                :selectedLineWidth="currentLineWidth"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -62,7 +76,8 @@ import EventBus from '@/shared/eventBus';
 import ZoomControl from '@/components/ZoomControl.vue';
 import EraserControl from '@/components/EraserControl.vue';
 import RectangleBrush from '@/plugins/rectangle-brush';
-import DropdownPanel from '@/components/DropdownPanel.vue';
+import DropdownColorPanel from '@/components/DropdownColorPanel.vue';
+import DropdownLineWidthPanel from '@/components/DropdownLineWidthPanel.vue';
 // import { fabric } from 'fabric';
 
 const vClickOutside = require('v-click-outside');
@@ -75,7 +90,8 @@ export declare const fabric: any;
   components: {
     ZoomControl,
     EraserControl,
-    DropdownPanel,
+    DropdownColorPanel,
+    DropdownLineWidthPanel,
   },
   directives: {
     clickOutside: vClickOutside.directive,
@@ -88,7 +104,9 @@ export default class ControlsBar extends Vue {
   private zoomRatio: number = 1;
   private rect!: any;
   private currentColor: string = '#3498db';
+  private currentLineWidth: number = 4;
   private colorPanelIsOpened: boolean = false;
+  private lineWidthPanelIsOpened: boolean = false;
   private colors: any[] = [
     { id: '1abc9c', c: '#1abc9c', n: 'TURQUOISE' },
     { id: '16a085', c: '#16a085', n: 'GREEN SEA' },
@@ -120,12 +138,13 @@ export default class ControlsBar extends Vue {
   private toDrawingMode(): void {
     this.emitCanvasMode('freedraw');
     this.initDefaultBrush();
+    this.canvasFabricRef.freeDrawingBrush.width = this.currentLineWidth;
   }
 
   private toRectangleMode(): void {
     this.emitCanvasMode('rectangle');
     this.rect = new RectangleBrush(this.canvasFabricRef);
-    this.rect.draw(this.currentColor, this.zoomRatio);
+    this.rect.draw(this.currentColor, this.zoomRatio, this.currentLineWidth);
   }
 
   private initDefaultBrush(): void {
@@ -161,13 +180,16 @@ export default class ControlsBar extends Vue {
 
   private onClickOutside(): void {
     this.colorPanelIsOpened = false;
+    this.lineWidthPanelIsOpened = false;
   }
 
   private listenToEvents(): void {
     EventBus.$on('zoomRatio', (zoomRatio: number) => {
       this.zoomRatio = zoomRatio;
       if (this.drawingMode === 'rectangle') {
-        this.rect.draw(this.currentColor, this.zoomRatio);
+        this.rect.draw(this.currentColor, this.zoomRatio, this.currentLineWidth);
+      } else if (this.drawingMode === 'freedraw') {
+        this.canvasFabricRef.freeDrawingBrush.width = this.currentLineWidth;
       }
     });
   }
@@ -176,10 +198,23 @@ export default class ControlsBar extends Vue {
     this.currentColor = color;
     // this.$emit('currentColor', color);
     if (this.drawingMode === 'rectangle') {
-      this.rect.draw(this.currentColor, this.zoomRatio);
+      this.rect.draw(this.currentColor, this.zoomRatio, this.currentLineWidth);
     }
     this.canvasFabricRef.freeDrawingBrush.color = color;
     this.colorPanelIsOpened = false;
+  }
+
+  private openLineWidthPanel(): void {
+    this.lineWidthPanelIsOpened = !this.lineWidthPanelIsOpened;
+  }
+
+  private currentLineWidthReceived(lineWidth: number): void {
+    this.currentLineWidth = lineWidth;
+    if (this.drawingMode === 'rectangle') {
+      this.rect.draw(this.currentColor, this.zoomRatio, this.currentLineWidth);
+    }
+    this.canvasFabricRef.freeDrawingBrush.width = lineWidth;
+    this.lineWidthPanelIsOpened = false;
   }
 }
 </script>
@@ -236,6 +271,13 @@ export default class ControlsBar extends Vue {
       .c_color {
         width: 24px;
         height: 24px;
+      }
+    }
+    .s_scr__line_width_wrapper {
+      display: inline-block;
+      position: relative;
+      .s_scr__line_width_inner {
+        display: flex;
       }
     }
   }
