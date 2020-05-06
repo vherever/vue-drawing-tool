@@ -7,31 +7,24 @@ import ObjectControlsHelper from '@/plugins/object-controls-helper';
 
 export default class RectangleBrush {
   private readonly canvas: any;
-  private readonly color: string;
   private objectControlsHelper!: ObjectControlsHelper;
 
-  constructor(canvas: any, color: string) {
+  constructor(canvas: any) {
     this.canvas = canvas;
-    this.color = color;
     this.objectControlsHelper = new ObjectControlsHelper();
-    this.init();
   }
 
-  private init(): void {
-    let zoomRatio = 1;
-    EventBus.$on('zoomRatio', (zoom: number) => {
-      zoomRatio = zoom;
-    });
-
+  public draw(color: string, zoomRatio: number): void {
+    this.canvas.off('mouse:down');
+    this.canvas.off('mouse:up');
+    this.canvas.off('mouse:move');
     const fabricCanvas = this.canvas;
-    fabricCanvas.off('mouse:over');
-    uninstall();
-    let initialPos: any, bounds: any, rect: any, dragging = false, freeDrawing = true
+    let initialPos: any, bounds: any, rect: any, dragging = false, freeDrawing = true;
     const options = {
       drawRect: true,
       onlyOne: false,
       rectProps: {
-        stroke: this.color,
+        stroke: color,
         strokeWidth: 2,
         fill: 'transparent',
         selectable: false,
@@ -51,7 +44,7 @@ export default class RectangleBrush {
         width: 0, height: 0,
         ...options.rectProps
       });
-      fabricCanvas.add(rect)
+      fabricCanvas.add(rect);
     }
     function update(pointer: any) {
       if (initialPos.x > pointer.x) {
@@ -74,7 +67,6 @@ export default class RectangleBrush {
       rect.height = bounds.height / zoomRatio
       rect.dirty = true
       fabricCanvas.requestRenderAllBound()
-      // fabricCanvas.requestRenderAll()
     }
     function onMouseMove(e: any) {
       if (!dragging || !freeDrawing) {
@@ -96,22 +88,14 @@ export default class RectangleBrush {
         fabricCanvas.add(rect)
         rect.dirty = true
         fabricCanvas.requestRenderAllBound()
-        // fabricCanvas.requestRenderAll()
       }
       rect.setCoords(); // important!
-      // uninstall();
     }
     function install() {
       freeDrawing = true; dragging = false; rect = null;
       fabricCanvas.on('mouse:down', onMouseDown);
       fabricCanvas.on('mouse:move', onMouseMove);
       fabricCanvas.on('mouse:up', onMouseUp);
-    }
-    function uninstall() {
-      freeDrawing = false; dragging = false; rect = null
-      fabricCanvas.off('mouse:down', onMouseDown);
-      fabricCanvas.off('mouse:move', onMouseMove);
-      fabricCanvas.off('mouse:up', onMouseUp);
     }
 
     freeDrawing && install();

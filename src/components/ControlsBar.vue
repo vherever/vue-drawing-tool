@@ -85,6 +85,8 @@ export default class ControlsBar extends Vue {
   @Prop() private canvasFabricRef!: fabric.Canvas;
   @Prop() private drawingMode!: string;
 
+  private zoomRatio: number = 1;
+  private rect!: any;
   private currentColor: string = '#3498db';
   private colorPanelIsOpened: boolean = false;
   private colors: any[] = [
@@ -112,6 +114,7 @@ export default class ControlsBar extends Vue {
 
   mounted() {
     this.toDrawingMode();
+    this.listenToEvents();
   }
 
   private toDrawingMode(): void {
@@ -121,6 +124,8 @@ export default class ControlsBar extends Vue {
 
   private toRectangleMode(): void {
     this.emitCanvasMode('rectangle');
+    this.rect = new RectangleBrush(this.canvasFabricRef);
+    this.rect.draw(this.currentColor, this.zoomRatio);
   }
 
   private initDefaultBrush(): void {
@@ -148,7 +153,6 @@ export default class ControlsBar extends Vue {
 
   private emitCanvasMode(drawingMode: string): void {
     EventBus.$emit('drawingMode', drawingMode);
-    this.createRectangleBrushInstance(drawingMode);
   }
 
   private openColorPanel(): void {
@@ -159,19 +163,21 @@ export default class ControlsBar extends Vue {
     this.colorPanelIsOpened = false;
   }
 
-  private createRectangleBrushInstance(drawingMode: string): void {
-    if (drawingMode === 'rectangle') {
-      const rect = new RectangleBrush(
-        this.canvasFabricRef,
-        this.currentColor,
-      );
-    }
+  private listenToEvents(): void {
+    EventBus.$on('zoomRatio', (zoomRatio: number) => {
+      this.zoomRatio = zoomRatio;
+      if (this.drawingMode === 'rectangle') {
+        this.rect.draw(this.currentColor, this.zoomRatio);
+      }
+    });
   }
 
   private currentColorReceived(color: string): void {
     this.currentColor = color;
-    this.createRectangleBrushInstance(this.drawingMode);
     // this.$emit('currentColor', color);
+    if (this.drawingMode === 'rectangle') {
+      this.rect.draw(this.currentColor, this.zoomRatio);
+    }
     this.canvasFabricRef.freeDrawingBrush.color = color;
     this.colorPanelIsOpened = false;
   }
