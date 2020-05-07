@@ -64,6 +64,7 @@
                                 v-click-outside="onClickOutside"
                                 @currentLineWidth="currentLineWidthReceived"
                                 :selectedLineWidth="currentLineWidth"
+                                :currentColor="currentColor"
         />
       </div>
     </div>

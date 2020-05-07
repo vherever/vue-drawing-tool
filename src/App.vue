@@ -54,6 +54,7 @@ export default class App extends Vue {
   }
   * {
     font-family: 'Helvetica Neue', Arial, sans-serif;
+    box-sizing: border-box;
   }
   body {
     overflow-y: hidden;
