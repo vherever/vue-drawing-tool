@@ -9,11 +9,13 @@
               v-bind:class="drawingMode === 'freedraw' ? 'active' : ''"
               @click="toDrawingMode"></button>
 
-      <button class="c_rectangle" ref="rectangle-mode"
+      <button class="c_current_figure" ref="rectangle-mode"
               style="display: inline-block"
-              v-bind:class="drawingMode === 'rectangle' ? 'active' : ''"
-              @click="toRectangleMode(defaultFigure)"
-      >{{ currentFigure ? currentFigure : defaultFigure }}</button>
+              v-bind:class="this.drawingMode === 'rectangle' ? `active ${this.currentFigure}`
+              : this.currentFigure2 || this.defaultFigure"
+              @click="toRectangleMode(currentFigure2)">
+        <span></span>
+      </button>
 
       <div class="s_scr__rectangle_mode_wrapper">
         <button class="c_rectangle_mode"
@@ -120,6 +122,7 @@ export default class ControlsBar extends Vue {
   private currentLineWidth: number = 4;
   private defaultFigure: string = 'rect_e';
   private currentFigure: string = '';
+  private currentFigure2: string = '';
   private colorPanelIsOpened: boolean = false;
   private lineWidthPanelIsOpened: boolean = false;
   private figuresPanelIsOpened: boolean = false;
@@ -164,6 +167,7 @@ export default class ControlsBar extends Vue {
 
   private toRectangleMode(figure: string): void {
     this.currentFigure = figure;
+    this.currentFigure2 = figure;
     switch (figure) {
       case 'rect_e':
         this.emitCanvasMode('rectangle');
@@ -269,6 +273,7 @@ export default class ControlsBar extends Vue {
 
   private currentFigureReceived(figure: string): void {
     this.currentFigure = figure;
+    this.currentFigure2 = figure;
     this.toRectangleMode(figure);
     this.figuresPanelIsOpened = false;
   }
@@ -312,6 +317,26 @@ export default class ControlsBar extends Vue {
       width: 21px;
       height: 21px;
       background-size: 17px 17px;
+    }
+    .c_current_figure {
+      /*width: 35px;*/
+      /*height: 25px;*/
+      &.rect_f {
+        span {
+          display: inline-block;
+          width: 25px;
+          height: 18px;
+          background-color: #000000;
+        }
+      }
+      &.rect_e {
+        span {
+          display: inline-block;
+          width: 25px;
+          height: 18px;
+          border: 2px solid #000000;
+        }
+      }
     }
     .c_rectangle_mode {
       margin-left: 2px;
