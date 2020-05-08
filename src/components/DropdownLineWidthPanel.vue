@@ -42,7 +42,7 @@ export default class DropdownLineWidthPanel extends Vue {
     text-align: left;
     .s__scr_dd_panel_item {
       &.active {
-        background-color: #b7b7b7;
+        background-color: #dddddd;
       }
       a {
         display: flex;

@@ -29,6 +29,7 @@ export default class DropdownColorPanel extends Vue {
 
 <style scoped lang="scss">
   .s_scr__dd_panel {
+    padding: 5px 5px;
     &.palette {
       width: 182px;
       text-align: left;

@@ -14,7 +14,7 @@ export default class RectangleBrush {
     this.objectControlsHelper = new ObjectControlsHelper();
   }
 
-  public draw(color: string, zoomRatio: number, lineWidth: number): void {
+  public draw(color: string, zoomRatio: number, lineWidth: number, isFilled?: boolean): void {
     this.canvas.off('mouse:down');
     this.canvas.off('mouse:up');
     this.canvas.off('mouse:move');
@@ -26,7 +26,7 @@ export default class RectangleBrush {
       rectProps: {
         stroke: color,
         strokeWidth: lineWidth,
-        fill: 'transparent',
+        fill: isFilled ? color : 'transparent',
         selectable: false,
         id: this.objectControlsHelper.generateGuid(),
       }

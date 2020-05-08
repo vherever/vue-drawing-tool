@@ -82,7 +82,6 @@ export default class App extends Vue {
     }
   }
   .s_scr__dd_panel {
-    padding: 5px 5px;
     background-color: #ffffff;
     position: absolute;
     border: 1px solid #b7b7b7;

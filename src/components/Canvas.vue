@@ -49,7 +49,7 @@ export default class Canvas extends Vue {
 
   private clearCanvas(): void {
     this.canvas.clear();
-    this.canvas.backgroundColor = '#FFFFFF';
+    this.canvas.backgroundColor = '#ecf0f1';
     this.canvas.isDrawingMode = true;
   }
 
@@ -132,7 +132,7 @@ export default class Canvas extends Vue {
 
         this.canvas.on('mouse:up', (e: any) => {
           // if using eraser tool - need to clear white path
-          // this.canvas.clearContext((this.canvas as any).contextTop);
+          this.canvas.clearContext((this.canvas as any).contextTop);
           // this.canvas.requestRenderAll();
         });
 
@@ -348,7 +348,8 @@ export default class Canvas extends Vue {
   .s_scr__canvas_wrapper {
     background-color: #000000;
     position: relative;
-    height: calc(100% - 100px);
+    /*height: calc(100% - 100px);*/
+    height: 100%;
     overflow: scroll;
     padding-top: 100px;
     .s_scr__drawing_canvas {

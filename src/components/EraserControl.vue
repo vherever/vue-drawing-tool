@@ -29,7 +29,7 @@ export default class EraserControl extends Vue {
     const canvas = this.canvasFabricRef;
     canvas.isDrawingMode = true;
     const eraserBrush = new EraserBrush(canvas);
-    eraserBrush.width = 25;
+    // eraserBrush.width = 25;
     eraserBrush.color = '#ffffff';
     canvas.freeDrawingBrush = eraserBrush;
   }

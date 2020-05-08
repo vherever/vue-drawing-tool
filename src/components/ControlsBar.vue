@@ -12,9 +12,19 @@
       <button class="c_rectangle" ref="rectangle-mode"
               style="display: inline-block"
               v-bind:class="drawingMode === 'rectangle' ? 'active' : ''"
-              @click="toRectangleMode"
-      >rect
-      </button>
+              @click="toRectangleMode(defaultFigure)"
+      >{{ currentFigure ? currentFigure : defaultFigure }}</button>
+
+      <div class="s_scr__rectangle_mode_wrapper">
+        <button class="c_rectangle_mode"
+                @click="openFiguresPanel">^</button>
+        <DropdownFiguresPanel v-if="figuresPanelIsOpened"
+                              v-click-outside="onClickOutside"
+                              :currentColor="currentColor"
+                              :selectedFigure="currentFigure"
+                              @currentFigure="currentFigureReceived"
+        ></DropdownFiguresPanel>
+      </div>
 
       <div class="c_color_wrapper">
         <button class="c_color"
@@ -79,6 +89,7 @@ import EraserControl from '@/components/EraserControl.vue';
 import RectangleBrush from '@/plugins/rectangle-brush';
 import DropdownColorPanel from '@/components/DropdownColorPanel.vue';
 import DropdownLineWidthPanel from '@/components/DropdownLineWidthPanel.vue';
+import DropdownFiguresPanel from '@/components/DropdownFiguresPanel.vue';
 // import { fabric } from 'fabric';
 
 const vClickOutside = require('v-click-outside');
@@ -93,6 +104,7 @@ export declare const fabric: any;
     EraserControl,
     DropdownColorPanel,
     DropdownLineWidthPanel,
+    DropdownFiguresPanel,
   },
   directives: {
     clickOutside: vClickOutside.directive,
@@ -106,8 +118,11 @@ export default class ControlsBar extends Vue {
   private rect!: any;
   private currentColor: string = '#3498db';
   private currentLineWidth: number = 4;
+  private defaultFigure: string = 'rect_e';
+  private currentFigure: string = '';
   private colorPanelIsOpened: boolean = false;
   private lineWidthPanelIsOpened: boolean = false;
+  private figuresPanelIsOpened: boolean = false;
   private colors: any[] = [
     { id: '1abc9c', c: '#1abc9c', n: 'TURQUOISE' },
     { id: '16a085', c: '#16a085', n: 'GREEN SEA' },
@@ -136,23 +151,50 @@ export default class ControlsBar extends Vue {
     this.listenToEvents();
   }
 
+  private get isFigureFilled(): boolean {
+    return this.currentFigure === 'rect_f';
+  }
+
   private toDrawingMode(): void {
     this.emitCanvasMode('freedraw');
     this.initDefaultBrush();
     this.canvasFabricRef.freeDrawingBrush.width = this.currentLineWidth;
+    this.currentFigure = '';
   }
 
-  private toRectangleMode(): void {
-    this.emitCanvasMode('rectangle');
-    this.rect = new RectangleBrush(this.canvasFabricRef);
-    this.rect.draw(this.currentColor, this.zoomRatio, this.currentLineWidth);
+  private toRectangleMode(figure: string): void {
+    this.currentFigure = figure;
+    switch (figure) {
+      case 'rect_e':
+        this.emitCanvasMode('rectangle');
+        this.rect = new RectangleBrush(this.canvasFabricRef);
+        this.rect.draw(
+          this.currentColor,
+          this.zoomRatio,
+          this.currentLineWidth,
+          this.isFigureFilled,
+        );
+        break;
+      case 'rect_f':
+        this.emitCanvasMode('rectangle');
+        this.rect = new RectangleBrush(this.canvasFabricRef);
+        this.rect.draw(
+          this.currentColor,
+          this.zoomRatio,
+          this.currentLineWidth,
+          this.isFigureFilled,
+        );
+        break;
+      default:
+        break;
+    }
   }
 
   private initDefaultBrush(): void {
     // @ts-ignore
     // eslint-disable-next-line
     const pencilBrush = new fabric.PencilBrush(this.canvasFabricRef);
-    pencilBrush.width = 2;
+    pencilBrush.width = this.currentLineWidth;
     pencilBrush.color = this.currentColor;
     this.canvasFabricRef.freeDrawingBrush = pencilBrush;
   }
@@ -165,6 +207,7 @@ export default class ControlsBar extends Vue {
     EventBus.$emit('clearCanvas', true);
     EventBus.$emit('zoomRatio', 1);
     this.emitCanvasMode('freedraw');
+    this.initDefaultBrush();
   }
 
   private clearSelected(): void {
@@ -182,13 +225,19 @@ export default class ControlsBar extends Vue {
   private onClickOutside(): void {
     this.colorPanelIsOpened = false;
     this.lineWidthPanelIsOpened = false;
+    this.figuresPanelIsOpened = false;
   }
 
   private listenToEvents(): void {
     EventBus.$on('zoomRatio', (zoomRatio: number) => {
       this.zoomRatio = zoomRatio;
       if (this.drawingMode === 'rectangle') {
-        this.rect.draw(this.currentColor, this.zoomRatio, this.currentLineWidth);
+        this.rect.draw(
+          this.currentColor,
+          this.zoomRatio,
+          this.currentLineWidth,
+          this.isFigureFilled,
+        );
       } else if (this.drawingMode === 'freedraw') {
         this.canvasFabricRef.freeDrawingBrush.width = this.currentLineWidth;
       }
@@ -199,7 +248,7 @@ export default class ControlsBar extends Vue {
     this.currentColor = color;
     // this.$emit('currentColor', color);
     if (this.drawingMode === 'rectangle') {
-      this.rect.draw(this.currentColor, this.zoomRatio, this.currentLineWidth);
+      this.rect.draw(this.currentColor, this.zoomRatio, this.currentLineWidth, this.isFigureFilled);
     }
     this.canvasFabricRef.freeDrawingBrush.color = color;
     this.colorPanelIsOpened = false;
@@ -212,10 +261,20 @@ export default class ControlsBar extends Vue {
   private currentLineWidthReceived(lineWidth: number): void {
     this.currentLineWidth = lineWidth;
     if (this.drawingMode === 'rectangle') {
-      this.rect.draw(this.currentColor, this.zoomRatio, this.currentLineWidth);
+      this.rect.draw(this.currentColor, this.zoomRatio, this.currentLineWidth, this.isFigureFilled);
     }
     this.canvasFabricRef.freeDrawingBrush.width = lineWidth;
     this.lineWidthPanelIsOpened = false;
+  }
+
+  private currentFigureReceived(figure: string): void {
+    this.currentFigure = figure;
+    this.toRectangleMode(figure);
+    this.figuresPanelIsOpened = false;
+  }
+
+  private openFiguresPanel(): void {
+    this.figuresPanelIsOpened = !this.figuresPanelIsOpened;
   }
 }
 </script>
@@ -254,6 +313,9 @@ export default class ControlsBar extends Vue {
       height: 21px;
       background-size: 17px 17px;
     }
+    .c_rectangle_mode {
+      margin-left: 2px;
+    }
     .c_clear_canvas {
       background: url(../../public/assets/icons/trash.svg) 2px 1px no-repeat;
       width: 21px;
@@ -273,6 +335,10 @@ export default class ControlsBar extends Vue {
         width: 24px;
         height: 24px;
       }
+    }
+    .s_scr__rectangle_mode_wrapper {
+      display: inline-block;
+      position: relative;
     }
     .s_scr__line_width_wrapper {
       display: inline-block;
