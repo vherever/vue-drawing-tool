@@ -1,8 +1,4 @@
 export default class ObjectControlsHelper {
-  init(): void {
-    console.log('___ init'); // todo
-  }
-
   public generateGuid(): string {
     let result;
     result = '';

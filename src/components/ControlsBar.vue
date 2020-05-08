@@ -11,9 +11,9 @@
 
       <button class="c_current_figure" ref="rectangle-mode"
               style="display: inline-block"
-              v-bind:class="this.drawingMode === 'rectangle' ? `active ${this.currentFigure}`
-              : this.currentFigure2 || this.defaultFigure"
-              @click="toRectangleMode(currentFigure2)">
+              v-bind:class="this.drawingMode === 'rectangle' ? `active ${currentFigure2}`
+              : currentFigure2 || this.defaultFigure"
+              @click="toRectangleMode(currentFigure2 || defaultFigure)">
         <span></span>
       </button>
 
@@ -166,6 +166,7 @@ export default class ControlsBar extends Vue {
   }
 
   private toRectangleMode(figure: string): void {
+    console.log('___ figure', figure); // todo
     this.currentFigure = figure;
     this.currentFigure2 = figure;
     switch (figure) {
