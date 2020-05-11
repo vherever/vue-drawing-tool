@@ -79,7 +79,15 @@
                                 :currentColor="currentColor"/>
       </div>
 
-      <button class="c_crop" @click="cropCanvas">Crop</button>
+      <button class="c_crop"
+              @click="cropCanvas"
+              v-if="allowToCrop">Crop</button>
+
+      <div class="s_scr__crop_controls"
+           v-if="cropControlsIsActive">
+        <button @click="cropOkay">Crop</button>
+        <button @click="cropCancel">Cancel</button>
+      </div>
     </div>
   </div>
 </template>
@@ -129,7 +137,10 @@ export default class ControlsBar extends Vue {
   private colorPanelIsOpened: boolean = false;
   private lineWidthPanelIsOpened: boolean = false;
   private figuresPanelIsOpened: boolean = false;
+  private cropControlsIsActive: boolean = false;
+  private allowToCrop: boolean = true;
   private appServiceInstance!: AppService;
+  private cropInstance!: CropTool;
   private colors: any[] = [
     { id: '1abc9c', c: '#1abc9c', n: 'TURQUOISE' },
     { id: '16a085', c: '#16a085', n: 'GREEN SEA' },
@@ -157,6 +168,9 @@ export default class ControlsBar extends Vue {
     this.toDrawingMode();
     this.listenToEvents();
     this.appServiceInstance = new AppService();
+    const canvasWidth = this.appServiceInstance.windowInnerWidth;
+    const canvasHeight = this.appServiceInstance.windowInnerHeight - 100;
+    this.cropInstance = new CropTool(canvasWidth, canvasHeight);
   }
 
   private get isFigureFilled(): boolean {
@@ -289,11 +303,24 @@ export default class ControlsBar extends Vue {
   }
 
   private cropCanvas(): void {
-    this.emitCanvasMode('rectangle');
-    const canvasWidth = this.appServiceInstance.windowInnerWidth;
-    const canvasHeight = this.appServiceInstance.windowInnerHeight;
-    const cropInstance = new CropTool(canvasWidth, canvasHeight);
-    cropInstance.draw();
+    this.allowToCrop = false;
+    this.emitCanvasMode('crop');
+    this.cropInstance.init();
+    this.cropControlsIsActive = true;
+  }
+
+  private cropCancel(): void {
+    this.cropControlsIsActive = false;
+    this.allowToCrop = true;
+    this.cropInstance.removeCropperOverlay();
+  }
+
+  private cropOkay(): void {
+    this.cropControlsIsActive = false;
+    this.allowToCrop = true;
+    EventBus.$emit('cropEmit', true);
+    EventBus.$emit('drawingMode', 'freedraw');
+    this.cropInstance.removeCropperOverlay();
   }
 }
 </script>

@@ -14,6 +14,7 @@ import CanvasSnapGridService from '@/services/canvas-snap-grid.service';
 import AppService from '@/services/app-service';
 import ObjectControlsHelper from '@/plugins/object-controls-helper';
 import { rewriteControlsFormatter } from '@/plugins/class-rewrite-formatters';
+import CanvasHelper from '@/services/canvas-helper';
 
 declare const fabric: any;
 
@@ -29,10 +30,12 @@ export default class Canvas extends Vue {
   private canvasHeight!: number;
   private canvasClass: string = '';
   private objectControlsHelper: ObjectControlsHelper;
+  private canvasHelper!: CanvasHelper;
 
   constructor() {
     super();
     this.objectControlsHelper = new ObjectControlsHelper();
+    this.canvasHelper = new CanvasHelper();
   }
 
   mounted() {
@@ -85,6 +88,11 @@ export default class Canvas extends Vue {
   }
 
   private listenToEvents(): void {
+    EventBus.$on('canvasDimensions', (data: any) => {
+      console.log('data', data);
+      this.setCanvasSize(data.width, data.height);
+    });
+
     EventBus.$on('clearCanvas', () => {
       this.clearCanvas();
     });
@@ -103,6 +111,7 @@ export default class Canvas extends Vue {
       this.setCanvasSize(canvasWidth, canvasHeight);
     });
 
+    // TODO: refactor this
     EventBus.$on('drawingMode', (drawingMode: string) => {
       console.log('___ drawingMode123', drawingMode); // todo
       // disable selection
@@ -123,6 +132,7 @@ export default class Canvas extends Vue {
         this.canvas.off('selection:created');
         this.canvas.off('selection:cleared');
         this.canvas.off('selection:updated');
+        this.canvas.off('object:moving');
 
         /*eslint-disable */
         this.canvas.on('path:created', (e: any) => {
@@ -134,6 +144,10 @@ export default class Canvas extends Vue {
           // if using eraser tool - need to clear white path
           this.canvas.clearContext((this.canvas as any).contextTop);
           // this.canvas.requestRenderAll();
+        });
+
+        this.canvas.on('object:moving', (e: any) => {
+          this.canvasHelper.preventMovingObjectsOutsideCanvas(e);
         });
 
         this.canvas.on('mouse:move', (e: any) => {
@@ -189,7 +203,7 @@ export default class Canvas extends Vue {
 
         this.canvas.on('object:moving', (e: any) => {
           isMoving = true;
-        })
+        });
 
         this.canvas.on('selection:cleared', (e: any) => {
           console.log('___ e cleared', e); // todo
