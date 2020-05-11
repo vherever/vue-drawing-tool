@@ -76,9 +76,10 @@
                                 v-click-outside="onClickOutside"
                                 @currentLineWidth="currentLineWidthReceived"
                                 :selectedLineWidth="currentLineWidth"
-                                :currentColor="currentColor"
-        />
+                                :currentColor="currentColor"/>
       </div>
+
+      <button class="c_crop" @click="cropCanvas">Crop</button>
     </div>
   </div>
 </template>
@@ -92,6 +93,8 @@ import RectangleBrush from '@/plugins/rectangle-brush';
 import DropdownColorPanel from '@/components/DropdownColorPanel.vue';
 import DropdownLineWidthPanel from '@/components/DropdownLineWidthPanel.vue';
 import DropdownFiguresPanel from '@/components/DropdownFiguresPanel.vue';
+import CropTool from '@/plugins/crop-tool';
+import AppService from '@/services/app-service';
 // import { fabric } from 'fabric';
 
 const vClickOutside = require('v-click-outside');
@@ -126,6 +129,7 @@ export default class ControlsBar extends Vue {
   private colorPanelIsOpened: boolean = false;
   private lineWidthPanelIsOpened: boolean = false;
   private figuresPanelIsOpened: boolean = false;
+  private appServiceInstance!: AppService;
   private colors: any[] = [
     { id: '1abc9c', c: '#1abc9c', n: 'TURQUOISE' },
     { id: '16a085', c: '#16a085', n: 'GREEN SEA' },
@@ -152,6 +156,7 @@ export default class ControlsBar extends Vue {
   mounted() {
     this.toDrawingMode();
     this.listenToEvents();
+    this.appServiceInstance = new AppService();
   }
 
   private get isFigureFilled(): boolean {
@@ -282,6 +287,14 @@ export default class ControlsBar extends Vue {
   private openFiguresPanel(): void {
     this.figuresPanelIsOpened = !this.figuresPanelIsOpened;
   }
+
+  private cropCanvas(): void {
+    this.emitCanvasMode('rectangle');
+    const canvasWidth = this.appServiceInstance.windowInnerWidth;
+    const canvasHeight = this.appServiceInstance.windowInnerHeight;
+    const cropInstance = new CropTool(canvasWidth, canvasHeight);
+    cropInstance.draw();
+  }
 }
 </script>
 
@@ -361,6 +374,9 @@ export default class ControlsBar extends Vue {
         width: 24px;
         height: 24px;
       }
+    }
+    .c_crop {
+      display: inline-block;
     }
     .s_scr__rectangle_mode_wrapper {
       display: inline-block;

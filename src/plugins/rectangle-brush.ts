@@ -81,6 +81,7 @@ export default class RectangleBrush {
         fabricCanvas.remove(rect);
       }
       if(!rect){
+        console.log('VVVV');
         rect = new fabric.Rect({
           ...bounds, left: bounds.x, top: bounds.y,
           ...options.rectProps
