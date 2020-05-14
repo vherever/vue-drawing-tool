@@ -314,7 +314,7 @@ export default class ControlsBar extends Vue {
   private cropCanvas(): void {
     this.allowToCrop = false;
     this.emitCanvasMode('crop');
-    this.cropInstance.init(this.canvasWidth, this.canvasHeight);
+    this.cropInstance.init(this.canvasWidth, this.canvasHeight, this.zoomRatio);
     this.cropControlsIsActive = true;
   }
 

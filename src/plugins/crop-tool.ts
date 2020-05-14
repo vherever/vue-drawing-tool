@@ -17,13 +17,15 @@ export default class CropTool {
   private group: any;
   private readonly parentCanvas: any;
   private strokeWidth: number = 2;
+  private zoomRatio!: number;
 
   constructor(parentCanvas: any) {
     this.parentCanvas = parentCanvas;
     this.canvasHelper = new CanvasHelper();
   }
 
-  public init(canvasWidth: number, canvasHeight: number): void {
+  public init(canvasWidth: number, canvasHeight: number, zoomRatio: number): void {
+    this.zoomRatio = zoomRatio;
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
     this.draw();
@@ -60,8 +62,8 @@ export default class CropTool {
     console.log('data', data);
     this.groupObjects(this.parentCanvas);
     const activeObject: any = this.parentCanvas.getActiveObject();
-    activeObject.set('left', activeObject.aCoords.tl.x - data.left);
-    activeObject.set('top', activeObject.aCoords.tl.y - data.top);
+    activeObject.set('left', (activeObject.aCoords.tl.x - data.left / this.zoomRatio));
+    activeObject.set('top', (activeObject.aCoords.tl.y - data.top / this.zoomRatio));
     const items = activeObject.getObjects();
     activeObject.destroy();
     this.parentCanvas.remove(activeObject);
@@ -148,5 +150,9 @@ export default class CropTool {
     });
     this.ungroupObjects(this.cropperParameters);
     this.removeCropperOverlay();
+    EventBus.$emit('canvasDimensions', {
+      width: this.cropperParameters.width,
+      height: this.cropperParameters.height,
+    });
   }
 }

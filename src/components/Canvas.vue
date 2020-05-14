@@ -99,7 +99,13 @@ export default class Canvas extends Vue {
       this.canvas.discardActiveObject();
     });
 
-    EventBus.$on('zoomRatio', (zoomRatio: any) => {
+    // After crop
+    EventBus.$on('canvasDimensions', (canvasDimensions: { width: number; height: number }) => {
+      this.canvasWidth = canvasDimensions.width;
+      this.canvasHeight = canvasDimensions.height;
+    });
+
+    EventBus.$on('zoomRatio', (zoomRatio: number) => {
       this.canvasClass = zoomRatio >= 1 ? '' : 'v-aligned';
       const canvasWidth: number = this.canvasWidth * zoomRatio;
       const canvasHeight: number = this.canvasHeight * zoomRatio;
