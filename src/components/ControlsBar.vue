@@ -1,82 +1,85 @@
 <template>
   <div class="s_scr__drawing_controls">
     <div class="s_scr_controls_inner">
-      <button class="c_edit" ref="edit-mode"
-              v-bind:class="drawingMode === 'edit' ? 'active' : ''"
-              @click="toEditMode"></button>
+      <div class="s_scr_controls_inner2"
+           v-if="allowToCrop">
+        <button class="c_edit" ref="edit-mode"
+                v-bind:class="drawingMode === 'edit' ? 'active' : ''"
+                @click="toEditMode"></button>
 
-      <button class="c_drawing" ref="drawing-mode"
-              v-bind:class="drawingMode === 'freedraw' ? 'active' : ''"
-              @click="toDrawingMode"></button>
+        <button class="c_drawing" ref="drawing-mode"
+                v-bind:class="drawingMode === 'freedraw' ? 'active' : ''"
+                @click="toDrawingMode"></button>
 
-      <button class="c_current_figure" ref="rectangle-mode"
-              style="display: inline-block"
-              v-bind:class="this.drawingMode === 'rectangle' ? `active ${currentFigure2}`
-              : currentFigure2 || this.defaultFigure"
-              @click="toRectangleMode(currentFigure2 || defaultFigure)">
-        <span></span>
-      </button>
+        <button class="c_current_figure" ref="rectangle-mode"
+                style="display: inline-block"
+                v-bind:class="this.drawingMode === 'rectangle' ? `active ${currentFigure2}`
+                : currentFigure2 || this.defaultFigure"
+                @click="toRectangleMode(currentFigure2 || defaultFigure)">
+          <span></span>
+        </button>
 
-      <div class="s_scr__rectangle_mode_wrapper">
-        <button class="c_rectangle_mode"
-                @click="openFiguresPanel">^</button>
-        <DropdownFiguresPanel v-if="figuresPanelIsOpened"
-                              v-click-outside="onClickOutside"
-                              :currentColor="currentColor"
-                              :selectedFigure="currentFigure"
-                              @currentFigure="currentFigureReceived"
-        ></DropdownFiguresPanel>
-      </div>
-
-      <div class="c_color_wrapper">
-        <button class="c_color"
-                @click="openColorPanel"
-                v-bind:style="'background-color:' + currentColor"
-        ></button>
-        <DropdownColorPanel v-if="colorPanelIsOpened"
-                       @currentColor="currentColorReceived"
-                       v-click-outside="onClickOutside"
-                       :selectedColor="currentColor"
-                       :items="colors"
-        ></DropdownColorPanel>
-      </div>
-
-      <button class="c_clear_canvas" ref="clear-canvas"
-              @click="clearCanvas"></button>
-
-      <button class="c_clear_object" ref="clear-object"
-              @click="clearSelected"></button>
-
-      <div id="drawing-mode-options" style="display: none">
-        <label for="drawing-mode-selector">Mode:</label>
-        <select id="drawing-mode-selector">
-          <option>Pencil</option>
-        </select><br>
-
-        <label for="drawing-line-width">Line width:</label>
-        <span class="info">1</span>
-        <input type="range" value="1" min="0" max="150" id="drawing-line-width"><br>
-
-        <label for="drawing-color">Line color:</label>
-        <input type="color" value="#000000" id="drawing-color"><br>
-      </div>
-
-      <ZoomControl :canvasFabricRef="canvasFabricRef"/>
-
-      <EraserControl :canvasFabricRef="canvasFabricRef" :drawingMode="drawingMode"/>
-
-      <div class="s_scr__line_width_wrapper">
-        <div class="s_scr__line_width_inner">
-          <button class="c_line_width"
-                  @click="openLineWidthPanel"
-          >{{ currentLineWidth }}</button>
-          <div>px</div>
-        </div>
-        <DropdownLineWidthPanel v-if="lineWidthPanelIsOpened"
+        <div class="s_scr__rectangle_mode_wrapper">
+          <button class="c_rectangle_mode"
+                  @click="openFiguresPanel">^</button>
+          <DropdownFiguresPanel v-if="figuresPanelIsOpened"
                                 v-click-outside="onClickOutside"
-                                @currentLineWidth="currentLineWidthReceived"
-                                :selectedLineWidth="currentLineWidth"
-                                :currentColor="currentColor"/>
+                                :currentColor="currentColor"
+                                :selectedFigure="currentFigure"
+                                @currentFigure="currentFigureReceived"
+          ></DropdownFiguresPanel>
+        </div>
+
+        <div class="c_color_wrapper">
+          <button class="c_color"
+                  @click="openColorPanel"
+                  v-bind:style="'background-color:' + currentColor"
+          ></button>
+          <DropdownColorPanel v-if="colorPanelIsOpened"
+                         @currentColor="currentColorReceived"
+                         v-click-outside="onClickOutside"
+                         :selectedColor="currentColor"
+                         :items="colors"
+          ></DropdownColorPanel>
+        </div>
+
+        <button class="c_clear_canvas" ref="clear-canvas"
+                @click="clearCanvas"></button>
+
+        <button class="c_clear_object" ref="clear-object"
+                @click="clearSelected"></button>
+
+        <div id="drawing-mode-options" style="display: none">
+          <label for="drawing-mode-selector">Mode:</label>
+          <select id="drawing-mode-selector">
+            <option>Pencil</option>
+          </select><br>
+
+          <label for="drawing-line-width">Line width:</label>
+          <span class="info">1</span>
+          <input type="range" value="1" min="0" max="150" id="drawing-line-width"><br>
+
+          <label for="drawing-color">Line color:</label>
+          <input type="color" value="#000000" id="drawing-color"><br>
+        </div>
+
+        <ZoomControl :canvasFabricRef="canvasFabricRef"/>
+
+        <EraserControl :canvasFabricRef="canvasFabricRef" :drawingMode="drawingMode"/>
+
+        <div class="s_scr__line_width_wrapper">
+          <div class="s_scr__line_width_inner">
+            <button class="c_line_width"
+                    @click="openLineWidthPanel"
+            >{{ currentLineWidth }}</button>
+            <div>px</div>
+          </div>
+          <DropdownLineWidthPanel v-if="lineWidthPanelIsOpened"
+                                  v-click-outside="onClickOutside"
+                                  @currentLineWidth="currentLineWidthReceived"
+                                  :selectedLineWidth="currentLineWidth"
+                                  :currentColor="currentColor"/>
+        </div>
       </div>
 
       <button class="c_crop"
@@ -168,9 +171,15 @@ export default class ControlsBar extends Vue {
     this.toDrawingMode();
     this.listenToEvents();
     this.appServiceInstance = new AppService();
-    const canvasWidth = this.appServiceInstance.windowInnerWidth;
-    const canvasHeight = this.appServiceInstance.windowInnerHeight - 100;
-    this.cropInstance = new CropTool(canvasWidth, canvasHeight);
+    this.cropInstance = new CropTool(this.canvasFabricRef);
+  }
+
+  private get canvasWidth(): number {
+    return this.canvasFabricRef.getWidth();
+  }
+
+  private get canvasHeight(): number {
+    return this.canvasFabricRef.getHeight();
   }
 
   private get isFigureFilled(): boolean {
@@ -305,7 +314,7 @@ export default class ControlsBar extends Vue {
   private cropCanvas(): void {
     this.allowToCrop = false;
     this.emitCanvasMode('crop');
-    this.cropInstance.init();
+    this.cropInstance.init(this.canvasWidth, this.canvasHeight);
     this.cropControlsIsActive = true;
   }
 
@@ -319,8 +328,10 @@ export default class ControlsBar extends Vue {
     this.cropControlsIsActive = false;
     this.allowToCrop = true;
     EventBus.$emit('cropEmit', true);
-    EventBus.$emit('drawingMode', 'freedraw');
-    this.cropInstance.removeCropperOverlay();
+    setTimeout(() => {
+      // TODO: Improve this?
+      EventBus.$emit('drawingMode', 'freedraw');
+    }, 10);
   }
 }
 </script>
@@ -329,6 +340,9 @@ export default class ControlsBar extends Vue {
   .s_scr__drawing_controls {
     text-align: center;
     .s_scr_controls_inner {
+      display: inline-block;
+    }
+    .s_scr_controls_inner2 {
       display: inline-block;
     }
     background-color: #b4b4b4;

@@ -88,11 +88,6 @@ export default class Canvas extends Vue {
   }
 
   private listenToEvents(): void {
-    EventBus.$on('canvasDimensions', (data: any) => {
-      console.log('data', data);
-      this.setCanvasSize(data.width, data.height);
-    });
-
     EventBus.$on('clearCanvas', () => {
       this.clearCanvas();
     });
@@ -113,7 +108,6 @@ export default class Canvas extends Vue {
 
     // TODO: refactor this
     EventBus.$on('drawingMode', (drawingMode: string) => {
-      console.log('___ drawingMode123', drawingMode); // todo
       // disable selection
       this.canvas.forEachObject((object: any) => {
         object.selectable = false;
@@ -147,7 +141,7 @@ export default class Canvas extends Vue {
         });
 
         this.canvas.on('object:moving', (e: any) => {
-          this.canvasHelper.preventMovingObjectsOutsideCanvas(e);
+          // this.canvasHelper.preventMovingObjectsOutsideCanvas(e);
         });
 
         this.canvas.on('mouse:move', (e: any) => {
