@@ -67,10 +67,10 @@ export default class Canvas extends Vue {
     this.canvasHeight = this.appServiceInstance.windowInnerHeight - 100;
     fabric.Object.prototype.set({
       transparentCorners: false,
-      cornerColor: '#00FFC4',
+      cornerColor: '#f39c12',
       cornerStyle: 'circle',
       cornerSize: 8,
-      borderColor: 'lightgrey',
+      borderColor: '#f1c40f',
     });
     this.$emit('canvas-fabric-ref', this.canvas);
     this.clearCanvas();
