@@ -1,6 +1,5 @@
-/*eslint-disable */
 import EventBus from '@/shared/eventBus';
-import CanvasHelper from "@/services/canvas-helper";
+import CanvasHelper from '@/services/canvas-helper';
 
 export declare const fabric: any;
 
@@ -9,7 +8,7 @@ export default class CropTool {
   private canvasWidth!: number;
   private canvasHeight!: number;
   private canvasHelper!: CanvasHelper;
-  private cropperParameters: { top: number, left: number, width: number, height: number } = {
+  private cropperParameters: { top: number; left: number; width: number; height: number } = {
     top: 100,
     left: 100,
     width: 300,
@@ -17,6 +16,7 @@ export default class CropTool {
   };
   private group: any;
   private readonly parentCanvas: any;
+  private strokeWidth: number = 2;
 
   constructor(parentCanvas: any) {
     this.parentCanvas = parentCanvas;
@@ -33,14 +33,15 @@ export default class CropTool {
   public removeCropperOverlay(): void {
     const cropOverlay = document.getElementById('s_scr__canvas_overlay');
     this.canvas = null;
-    cropOverlay && (cropOverlay.parentNode as any).remove();
+    if (cropOverlay) {
+      (cropOverlay.parentNode as any).remove();
+    }
   }
 
   private groupObjects(canvasParent: any): void {
-    const objects = canvasParent.getObjects().map((o) => {
-      return o.set('active', true);
-    });
+    const objects = canvasParent.getObjects().map((o: any) => o.set('active', true));
     const group = new fabric.Group(objects);
+    // eslint-disable-next-line
     canvasParent._activeObject = null;
     canvasParent.setActiveObject(group.setCoords()).renderAll();
 
@@ -48,7 +49,7 @@ export default class CropTool {
     const objectsInGroup = ao.getObjects();
     ao.clone((newgroup: any) => {
       this.group = newgroup;
-      objectsInGroup.forEach(function (object: any) {
+      objectsInGroup.forEach((object: any) => {
         canvasParent.remove(object);
       });
       canvasParent.add(this.group);
@@ -56,6 +57,7 @@ export default class CropTool {
   }
 
   private ungroupObjects(data: any): void {
+    console.log('data', data);
     this.groupObjects(this.parentCanvas);
     const activeObject: any = this.parentCanvas.getActiveObject();
     activeObject.set('left', activeObject.aCoords.tl.x - data.left);
@@ -82,18 +84,19 @@ export default class CropTool {
         selection: false,
         backgroundColor: '#0000009e',
       });
-      this.canvas.setDimensions({width: this.canvasWidth, height: this.canvasHeight});
+      this.canvas.setDimensions({ width: this.canvasWidth, height: this.canvasHeight });
 
       const rect = new fabric.Rect({
-        top: this.cropperParameters.top,
-        left: this.cropperParameters.left,
-        width: this.cropperParameters.width,
-        height: this.cropperParameters.height,
+        top: this.cropperParameters.top + this.strokeWidth / 2,
+        left: this.cropperParameters.left + this.strokeWidth / 2,
+        width: this.cropperParameters.width - this.strokeWidth,
+        height: this.cropperParameters.height - this.strokeWidth,
         strokeDashArray: [5, 5],
-        stroke: '#ffffff',
-        strokeWidth: 1,
+        stroke: 'black',
+        strokeWidth: this.strokeWidth,
         globalCompositeOperation: 'destination-out',
         type: 'crop',
+        hasRotatingPoint: false,
       });
       this.canvas.add(rect);
       rect.center();
@@ -105,6 +108,7 @@ export default class CropTool {
   private listenToEvents(): void {
     EventBus.$off('cropEmit');
     this.canvas.off('object:moving');
+    this.canvas.off('selection:cleared');
 
     EventBus.$on('cropEmit', () => {
       this.cropCanvas();
@@ -113,12 +117,16 @@ export default class CropTool {
     this.canvas.on('object:moving', (e: any) => {
       this.canvasHelper.preventMovingObjectsOutsideCanvas(e);
     });
+
+    this.canvas.on('selection:cleared', (e: any) => {
+      this.canvas.setActiveObject(e.deselected[0]);
+    });
   }
 
   private cropCanvas(): void {
     const activeObject = this.canvas.getActiveObject();
     if (activeObject) {
-      const aCoords = activeObject.aCoords;
+      const { aCoords } = activeObject;
       this.cropperParameters = {
         top: parseFloat(activeObject.top.toFixed(2)),
         left: parseFloat(activeObject.left.toFixed(2)),
@@ -136,7 +144,7 @@ export default class CropTool {
     }
     this.parentCanvas.setDimensions({
       width: this.cropperParameters.width,
-      height: this.cropperParameters.height
+      height: this.cropperParameters.height,
     });
     this.ungroupObjects(this.cropperParameters);
     this.removeCropperOverlay();
