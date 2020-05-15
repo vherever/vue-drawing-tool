@@ -2,7 +2,7 @@
   <div class="s_scr__drawing_controls">
     <div class="s_scr_controls_inner">
       <div class="s_scr_controls_inner2"
-           v-if="allowToCrop">
+           v-if="!cropControlsIsActive">
         <button class="c_edit" ref="edit-mode"
                 v-bind:class="drawingMode === 'edit' ? 'active' : ''"
                 @click="toEditMode"></button>
@@ -84,13 +84,13 @@
 
       <button class="c_crop"
               @click="cropCanvas"
-              v-if="allowToCrop">Crop</button>
+              v-if="!cropControlsIsActive">Crop</button>
 
-      <div class="s_scr__crop_controls"
-           v-if="cropControlsIsActive">
-        <button @click="cropOkay">Crop</button>
-        <button @click="cropCancel">Cancel</button>
-      </div>
+      <CropControl :cropControlsIsActive="cropControlsIsActive"
+                   :canvasFabricRef="canvasFabricRef"
+                   :zoomRatio="zoomRatio"
+                   @cropControlsIsActive="cropControlsIsActiveEmit"
+      ></CropControl>
     </div>
   </div>
 </template>
@@ -106,6 +106,7 @@ import DropdownLineWidthPanel from '@/components/DropdownLineWidthPanel.vue';
 import DropdownFiguresPanel from '@/components/DropdownFiguresPanel.vue';
 import CropTool from '@/plugins/crop-tool';
 import AppService from '@/services/app-service';
+import CropControl from '@/components/CropControl.vue';
 // import { fabric } from 'fabric';
 
 const vClickOutside = require('v-click-outside');
@@ -121,6 +122,7 @@ export declare const fabric: any;
     DropdownColorPanel,
     DropdownLineWidthPanel,
     DropdownFiguresPanel,
+    CropControl,
   },
   directives: {
     clickOutside: vClickOutside.directive,
@@ -141,9 +143,7 @@ export default class ControlsBar extends Vue {
   private lineWidthPanelIsOpened: boolean = false;
   private figuresPanelIsOpened: boolean = false;
   private cropControlsIsActive: boolean = false;
-  private allowToCrop: boolean = true;
   private appServiceInstance!: AppService;
-  private cropInstance!: CropTool;
   private colors: any[] = [
     { id: '1abc9c', c: '#1abc9c', n: 'TURQUOISE' },
     { id: '16a085', c: '#16a085', n: 'GREEN SEA' },
@@ -171,7 +171,6 @@ export default class ControlsBar extends Vue {
     this.toDrawingMode();
     this.listenToEvents();
     this.appServiceInstance = new AppService();
-    this.cropInstance = new CropTool(this.canvasFabricRef);
   }
 
   private get canvasWidth(): number {
@@ -311,27 +310,12 @@ export default class ControlsBar extends Vue {
     this.figuresPanelIsOpened = !this.figuresPanelIsOpened;
   }
 
+  private cropControlsIsActiveEmit(state: boolean): void {
+    this.cropControlsIsActive = state;
+  }
+
   private cropCanvas(): void {
-    this.allowToCrop = false;
-    this.emitCanvasMode('crop');
-    this.cropInstance.init(this.canvasWidth, this.canvasHeight, this.zoomRatio);
     this.cropControlsIsActive = true;
-  }
-
-  private cropCancel(): void {
-    this.cropControlsIsActive = false;
-    this.allowToCrop = true;
-    this.cropInstance.removeCropperOverlay();
-  }
-
-  private cropOkay(): void {
-    this.cropControlsIsActive = false;
-    this.allowToCrop = true;
-    EventBus.$emit('cropEmit', true);
-    setTimeout(() => {
-      // TODO: Improve this?
-      EventBus.$emit('drawingMode', 'freedraw');
-    }, 10);
   }
 }
 </script>
