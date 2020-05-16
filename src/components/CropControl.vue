@@ -6,9 +6,12 @@
     <input type="number" class="s_scr__canvas_width"
            v-model="cropperWidth"
            @change="onCropWidthChange" min="0">
+    <span class="s_scr__crop_label">px</span>
+    <span class="s_scr__crop_separator">:</span>
     <input type="number" class="s_scr__canvas_height"
            v-model="cropperHeight"
            @change="onCropHeightChange" min="0">
+    <span class="s_scr__crop_label">px</span>
   </div>
 </template>
 
@@ -130,7 +133,7 @@ export default class CropControl extends Vue {
       this.canvas = new fabric.Canvas('s_scr__canvas_overlay', {
         isDrawingMode: false,
         selection: false,
-        backgroundColor: '#0000009e',
+        backgroundColor: 'rgba(0,0,0,0.75)',
       });
       this.canvas.setDimensions({ width: this.canvasWidth, height: this.canvasHeight });
 
@@ -147,6 +150,7 @@ export default class CropControl extends Vue {
         hasRotatingPoint: false,
         strokeUniform: true,
         lockScalingFlip: true,
+        // minScaleLimit: 0.5,
       });
       this.canvas.add(rect);
       rect.center();
@@ -159,19 +163,18 @@ export default class CropControl extends Vue {
     const rect: fabric.Rect | any = this.cropRectangle;
 
     EventBus.$off('cropEmit');
-    this.canvas.off('object:moving');
     this.canvas.off('selection:cleared');
 
     EventBus.$on('cropEmit', () => {
       this.cropCanvas();
     });
 
-    this.canvas.on('object:moving', (e: any) => {
-      this.canvasHelper.preventMovingObjectsOutsideCanvas(e);
-    });
-
     this.canvas.on('selection:cleared', (e: any) => {
       this.canvas.setActiveObject(e.deselected[0]);
+    });
+
+    rect.on('moving', (e: any) => {
+      this.canvasHelper.preventMovingObjectsOutsideCanvas(e);
     });
 
     rect.on('scaling', () => {
@@ -180,6 +183,8 @@ export default class CropControl extends Vue {
 
       this.cropperWidth = width;
       this.cropperHeight = height;
+
+      rect.minScaleLimit = 0.5;
 
       rect.setCoords();
       this.canvas.requestRenderAll();
@@ -222,6 +227,7 @@ export default class CropControl extends Vue {
     const cropRect: any = this.canvas.getObjects().find((o: any) => o.type === 'crop');
     const scale: any = cropRect.getObjectScaling();
     cropRect.set('width', value / scale.scaleX);
+    cropRect.set('minScaleLimit', 0.5);
     cropRect.setCoords();
     this.canvas.requestRenderAll();
   }
@@ -231,6 +237,7 @@ export default class CropControl extends Vue {
     const cropRect: any = this.canvas.getObjects().find((o: any) => o.type === 'crop');
     const scale: any = cropRect.getObjectScaling();
     cropRect.set('height', value / scale.scaleY);
+    cropRect.set('minScaleLimit', 0.5);
     cropRect.setCoords();
     this.canvas.requestRenderAll();
   }
@@ -245,6 +252,14 @@ export default class CropControl extends Vue {
     }
     .s_scr__canvas_height {
       width: 40px;
+    }
+    .s_scr__crop_label {
+      font-size: 13px;
+      margin-left: 2px;
+    }
+    .s_scr__crop_separator {
+      font-size: 15px;
+      margin: 0 5px;
     }
   }
 </style>
