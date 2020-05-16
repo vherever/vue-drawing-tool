@@ -2,24 +2,26 @@
   <div class="s_scr__drawing_controls">
     <div class="s_scr_controls_inner">
       <div class="s_scr_controls_inner2"
-           v-if="!cropControlsIsActive">
+           v-if="showCropControl">
+        <!--Edit mode-->
         <button class="c_edit" ref="edit-mode"
                 v-bind:class="drawingMode === 'edit' ? 'active' : ''"
                 @click="toEditMode"></button>
 
+        <!--Drawing mode-->
         <button class="c_drawing" ref="drawing-mode"
                 v-bind:class="drawingMode === 'freedraw' ? 'active' : ''"
                 @click="toDrawingMode"></button>
 
-        <button class="c_current_figure" ref="rectangle-mode"
-                style="display: inline-block"
-                v-bind:class="this.drawingMode === 'rectangle' ? `active ${currentFigure2}`
-                : currentFigure2 || this.defaultFigure"
-                @click="toRectangleMode(currentFigure2 || defaultFigure)">
-          <span></span>
-        </button>
-
+        <!--Rectangle mode-->
         <div class="s_scr__rectangle_mode_wrapper">
+          <button class="c_current_figure" ref="rectangle-mode"
+                  style="display: inline-block"
+                  v-bind:class="this.drawingMode === 'rectangle' ? `active ${currentFigure2}`
+                : currentFigure2 || this.defaultFigure"
+                  @click="toRectangleMode(currentFigure2 || defaultFigure)">
+            <span></span>
+          </button>
           <button class="c_rectangle_mode"
                   @click="openFiguresPanel">^</button>
           <DropdownFiguresPanel v-if="figuresPanelIsOpened"
@@ -30,6 +32,7 @@
           ></DropdownFiguresPanel>
         </div>
 
+        <!--Change Color-->
         <div class="c_color_wrapper">
           <button class="c_color"
                   @click="openColorPanel"
@@ -43,9 +46,11 @@
           ></DropdownColorPanel>
         </div>
 
+        <!--Refresh Canvas-->
         <button class="c_clear_canvas" ref="clear-canvas"
                 @click="clearCanvas"></button>
 
+        <!--Clear Object-->
         <button class="c_clear_object" ref="clear-object"
                 @click="clearSelected"></button>
 
@@ -84,12 +89,13 @@
 
       <button class="c_crop"
               @click="cropCanvas"
-              v-if="!cropControlsIsActive">Crop</button>
+              v-if="showCropControl"
+      >Crop</button>
 
-      <CropControl :cropControlsIsActive="cropControlsIsActive"
+      <CropControl v-if="!showCropControl"
                    :canvasFabricRef="canvasFabricRef"
                    :zoomRatio="zoomRatio"
-                   @cropControlsIsActive="cropControlsIsActiveEmit"
+                   @showCropControl="showCropControlEmit"
       ></CropControl>
     </div>
   </div>
@@ -104,7 +110,6 @@ import RectangleBrush from '@/plugins/rectangle-brush';
 import DropdownColorPanel from '@/components/DropdownColorPanel.vue';
 import DropdownLineWidthPanel from '@/components/DropdownLineWidthPanel.vue';
 import DropdownFiguresPanel from '@/components/DropdownFiguresPanel.vue';
-import CropTool from '@/plugins/crop-tool';
 import AppService from '@/services/app-service';
 import CropControl from '@/components/CropControl.vue';
 // import { fabric } from 'fabric';
@@ -142,7 +147,7 @@ export default class ControlsBar extends Vue {
   private colorPanelIsOpened: boolean = false;
   private lineWidthPanelIsOpened: boolean = false;
   private figuresPanelIsOpened: boolean = false;
-  private cropControlsIsActive: boolean = false;
+  private showCropControl: boolean = true;
   private appServiceInstance!: AppService;
   private colors: any[] = [
     { id: '1abc9c', c: '#1abc9c', n: 'TURQUOISE' },
@@ -310,12 +315,12 @@ export default class ControlsBar extends Vue {
     this.figuresPanelIsOpened = !this.figuresPanelIsOpened;
   }
 
-  private cropControlsIsActiveEmit(state: boolean): void {
-    this.cropControlsIsActive = state;
+  private showCropControlEmit(state: boolean): void {
+    this.showCropControl = state;
   }
 
   private cropCanvas(): void {
-    this.cropControlsIsActive = true;
+    this.showCropControl = false;
   }
 }
 </script>

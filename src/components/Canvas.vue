@@ -90,6 +90,8 @@ export default class Canvas extends Vue {
 
   private listenToEvents(): void {
     EventBus.$on('clearCanvas', () => {
+      this.canvasWidth = this.appServiceInstance.windowInnerWidth;
+      this.canvasHeight = this.appServiceInstance.windowInnerHeight;
       this.clearCanvas();
     });
 
