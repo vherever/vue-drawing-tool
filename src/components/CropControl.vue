@@ -31,7 +31,7 @@ export default class CropControl extends Vue {
   private canvasHelper!: CanvasHelper;
   private cropperWidth: number = 300;
   private cropperHeight: number = 200;
-  private group: any;
+  private objectsGroup: any;
   private readonly strokeWidth: number = 0;
   private cropperParameters: { top: number; left: number; width: number; height: number } = {
     top: 100,
@@ -83,7 +83,8 @@ export default class CropControl extends Vue {
   }
 
   public removeCropperOverlay(): void {
-    const cropOverlay = document.getElementById('s_scr__canvas_overlay');
+    const cropOverlay: HTMLDivElement = document
+      .getElementById('s_scr__canvas_overlay') as HTMLDivElement;
     this.canvas = null;
     if (cropOverlay) {
       (cropOverlay.parentNode as any).remove();
@@ -94,26 +95,25 @@ export default class CropControl extends Vue {
     const objects = canvasParent.getObjects().map((o: any) => o.set('active', true));
     const group = new fabric.Group(objects);
     // eslint-disable-next-line
-    canvasParent._activeObject = null;
+    // canvasParent._activeObject = null;
     canvasParent.setActiveObject(group.setCoords()).renderAll();
 
-    const ao = canvasParent.getActiveObject();
-    const objectsInGroup = ao.getObjects();
-    ao.clone((newgroup: any) => {
-      this.group = newgroup;
+    const activeObject: any = canvasParent.getActiveObject();
+    const objectsInGroup = activeObject.getObjects();
+    activeObject.clone((newGroup: any) => {
+      this.objectsGroup = newGroup;
       objectsInGroup.forEach((object: any) => {
         canvasParent.remove(object);
       });
-      canvasParent.add(this.group);
+      canvasParent.add(this.objectsGroup);
     });
   }
 
   private ungroupObjects(data: any): void {
-    this.groupObjects(this.canvasFabricRef);
     const activeObject: any = this.canvasFabricRef.getActiveObject();
     activeObject.set('left', (activeObject.aCoords.tl.x - data.left / this.zoomRatio));
     activeObject.set('top', (activeObject.aCoords.tl.y - data.top / this.zoomRatio));
-    const items = activeObject.getObjects();
+    const items: any[] = activeObject.getObjects();
     activeObject.destroy();
     this.canvasFabricRef.remove(activeObject);
     for (let i = 0; i < items.length; i++) {
@@ -121,11 +121,12 @@ export default class CropControl extends Vue {
     }
 
     this.canvasFabricRef.discardActiveObject();
-    this.canvasFabricRef.remove(this.group);
+    this.canvasFabricRef.remove(this.objectsGroup);
   }
 
   private draw(): void {
-    const canvasWrapper = document.getElementsByClassName('s_scr__canvas_wrapper')[0];
+    const canvasWrapper: HTMLDivElement = document
+      .getElementsByClassName('s_scr__canvas_wrapper')[0] as HTMLDivElement;
     if (!document.getElementById('s_scr__canvas_overlay')) {
       const drawingOverlay = document.createElement('canvas');
       drawingOverlay.id = 's_scr__canvas_overlay';
@@ -150,7 +151,6 @@ export default class CropControl extends Vue {
         hasRotatingPoint: false,
         strokeUniform: true,
         lockScalingFlip: true,
-        // minScaleLimit: 0.5,
       });
       this.canvas.add(rect);
       rect.center();
@@ -214,6 +214,7 @@ export default class CropControl extends Vue {
       width: this.cropperWidth,
       height: this.cropperHeight,
     });
+    this.groupObjects(this.canvasFabricRef);
     this.ungroupObjects(this.cropperParameters);
     this.removeCropperOverlay();
     EventBus.$emit('canvasDimensions', {
@@ -224,8 +225,8 @@ export default class CropControl extends Vue {
 
   private onCropWidthChange(e: any): void {
     const value: number = parseInt(e.target.value.toString(), 10);
-    const cropRect: any = this.canvas.getObjects().find((o: any) => o.type === 'crop');
-    const scale: any = cropRect.getObjectScaling();
+    const cropRect: fabric.Rect = this.cropRectangle;
+    const scale: { scaleX: number; scaleY: number } = cropRect.getObjectScaling();
     cropRect.set('width', value / scale.scaleX);
     cropRect.set('minScaleLimit', 0.5);
     cropRect.setCoords();
@@ -234,7 +235,7 @@ export default class CropControl extends Vue {
 
   private onCropHeightChange(e: any): void {
     const value: number = parseInt(e.target.value.toString(), 10);
-    const cropRect: any = this.canvas.getObjects().find((o: any) => o.type === 'crop');
+    const cropRect: fabric.Rect = this.cropRectangle;
     const scale: any = cropRect.getObjectScaling();
     cropRect.set('height', value / scale.scaleY);
     cropRect.set('minScaleLimit', 0.5);
