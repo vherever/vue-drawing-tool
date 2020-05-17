@@ -18,6 +18,7 @@ declare const fabric: any;
 export default class EraserControl extends Vue {
   @Prop() private canvasFabricRef!: fabric.Canvas;
   @Prop() private drawingMode!: string;
+  @Prop() private currentLineWidth!: number;
   private isEraserActive: boolean = true;
 
   mounted() {
@@ -29,7 +30,7 @@ export default class EraserControl extends Vue {
     const canvas = this.canvasFabricRef;
     canvas.isDrawingMode = true;
     const eraserBrush = new EraserBrush(canvas);
-    // eraserBrush.width = 25;
+    eraserBrush.width = this.currentLineWidth;
     eraserBrush.color = '#ffffff';
     canvas.freeDrawingBrush = eraserBrush;
   }

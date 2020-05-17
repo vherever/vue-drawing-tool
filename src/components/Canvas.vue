@@ -71,6 +71,7 @@ export default class Canvas extends Vue {
       cornerStyle: 'circle',
       cornerSize: 8,
       borderColor: '#f1c40f',
+      strokeUniform: true,
     });
     this.$emit('canvas-fabric-ref', this.canvas);
     this.clearCanvas();

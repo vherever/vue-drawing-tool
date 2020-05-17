@@ -70,7 +70,9 @@
 
         <ZoomControl :canvasFabricRef="canvasFabricRef"/>
 
-        <EraserControl :canvasFabricRef="canvasFabricRef" :drawingMode="drawingMode"/>
+        <EraserControl :canvasFabricRef="canvasFabricRef"
+                       :drawingMode="drawingMode"
+                       :currentLineWidth="currentLineWidth"/>
 
         <div class="s_scr__line_width_wrapper">
           <div class="s_scr__line_width_inner">
@@ -85,6 +87,9 @@
                                   :selectedLineWidth="currentLineWidth"
                                   :currentColor="currentColor"/>
         </div>
+
+        <!--Canvas size-->
+        <CanvasSizeControl style="display: inline-block"></CanvasSizeControl>
       </div>
 
       <button class="c_crop"
@@ -112,6 +117,7 @@ import DropdownLineWidthPanel from '@/components/DropdownLineWidthPanel.vue';
 import DropdownFiguresPanel from '@/components/DropdownFiguresPanel.vue';
 import AppService from '@/services/app-service';
 import CropControl from '@/components/CropControl.vue';
+import CanvasSizeControl from '@/components/CanvasSizeControl.vue';
 // import { fabric } from 'fabric';
 
 const vClickOutside = require('v-click-outside');
@@ -128,6 +134,7 @@ export declare const fabric: any;
     DropdownLineWidthPanel,
     DropdownFiguresPanel,
     CropControl,
+    CanvasSizeControl,
   },
   directives: {
     clickOutside: vClickOutside.directive,
