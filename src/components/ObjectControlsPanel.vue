@@ -6,7 +6,7 @@
     <button class="s_scr__object_remove"
             @click="removeObject"></button>
     <button class="s_scr__object_copy"
-            @click="copyObject"></button>
+            @click="copyAndPasteObject"></button>
   </div>
 </template>
 
@@ -14,11 +14,15 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import EventBus from '@/shared/eventBus';
 
+export declare const fabric: any;
+
 @Component
 export default class ObjectControlsPanel extends Vue {
   @Prop() private selectedObject: any;
+  @Prop() private fabricCanvasRef!: fabric.Canvas;
   private readonly offsetTop: number = 100; // height of the controls panel
   private panelW: number = 0;
+  private clipboard!: any;
 
   mounted() {
     this.panelW = this.panelWidth;
@@ -46,8 +50,40 @@ export default class ObjectControlsPanel extends Vue {
     EventBus.$emit('clearSelected', true);
   }
 
-  private copyObject(): void {
-    console.log('copyObject', this.selectedObject);
+  private copyAndPasteObject(): void {
+    this.copyObject();
+    this.pasteObject();
+  }
+
+  private copyObject() {
+    this.fabricCanvasRef.getActiveObject().clone((cloned: any) => {
+      this.clipboard = cloned;
+    });
+  }
+
+  private pasteObject() {
+    this.clipboard.clone((clonedObj: any) => {
+      console.log('clonedObj', clonedObj);
+      this.fabricCanvasRef.discardActiveObject();
+      clonedObj.set({
+        left: clonedObj.left + 10,
+        top: clonedObj.top + 10,
+        evented: true,
+      });
+      if (clonedObj.type === 'activeSelection') {
+        clonedObj.canvas = this.fabricCanvasRef;
+        clonedObj.forEachObject((obj: any) => {
+          this.fabricCanvasRef.add(obj);
+        });
+        clonedObj.setCoords();
+      } else {
+        this.fabricCanvasRef.add(clonedObj);
+      }
+      this.clipboard.top += 10;
+      this.clipboard.left += 10;
+      this.fabricCanvasRef.setActiveObject(clonedObj);
+      this.fabricCanvasRef.requestRenderAll();
+    });
   }
 }
 </script>

@@ -5,6 +5,7 @@
     ></canvas>
     <ObjectControlsPanel v-if="controlsPanelIsActive"
                          :selectedObject="selectedObject"
+                         :fabricCanvasRef="canvas"
     ></ObjectControlsPanel>
   </div>
 </template>
