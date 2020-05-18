@@ -3,6 +3,9 @@
     <div v-if="drawingMode"></div>
     <canvas class="s_scr__drawing_canvas" id="drawing" ref="drawing"
     ></canvas>
+    <ObjectControlsPanel v-if="controlsPanelIsActive"
+                         :selectedObject="selectedObject"
+    ></ObjectControlsPanel>
   </div>
 </template>
 
@@ -15,10 +18,15 @@ import AppService from '@/services/app-service';
 import ObjectControlsHelper from '@/plugins/object-controls-helper';
 import { rewriteControlsFormatter } from '@/plugins/class-rewrite-formatters';
 import CanvasHelper from '@/services/canvas-helper';
+import ObjectControlsPanel from '@/components/ObjectControlsPanel.vue';
 
 declare const fabric: any;
 
-@Component
+@Component({
+  components: {
+    ObjectControlsPanel,
+  },
+})
 export default class Canvas extends Vue {
   @Prop() private canvasFabricRef!: fabric.Canvas;
   @Prop() private drawingMode!: string;
@@ -31,6 +39,8 @@ export default class Canvas extends Vue {
   private canvasClass: string = '';
   private objectControlsHelper: ObjectControlsHelper;
   private canvasHelper!: CanvasHelper;
+  private controlsPanelIsActive: boolean = false;
+  private selectedObject!: any;
 
   constructor() {
     super();
@@ -137,6 +147,9 @@ export default class Canvas extends Vue {
         this.canvas.off('selection:cleared');
         this.canvas.off('selection:updated');
         this.canvas.off('object:moving');
+        this.canvas.off('object:scaled');
+        this.canvas.off('object:rotating');
+        this.canvas.off('object:rotated');
 
         /*eslint-disable */
         this.canvas.on('path:created', (e: any) => {
@@ -152,6 +165,7 @@ export default class Canvas extends Vue {
 
         this.canvas.on('object:moving', (e: any) => {
           // this.canvasHelper.preventMovingObjectsOutsideCanvas(e);
+          this.controlsPanelIsActive = false;
         });
 
         this.canvas.on('mouse:move', (e: any) => {
@@ -183,15 +197,29 @@ export default class Canvas extends Vue {
         this.canvas.on('object:moved', (e: any) => {
           // console.log('___ e vvv', e); // todo
           isMoving = false;
+          this.controlsPanelIsActive = true;
         });
 
         this.canvas.on('object:scaling', (e: any) => {
+          this.controlsPanelIsActive = false;
           const activeObj: any = this.canvas.getActiveObject();
           const width = e.target.width * e.target.scaleX;
           const height = e.target.height * e.target.scaleY;
           const angle = e.target.angle * Math.PI / 180;
           const aCoords = activeObj.aCoords;
           // this.updateObjectControlsPanelPosition(activeObj.left, activeObj.top, width, angle);
+        });
+
+        this.canvas.on('object:scaled', (e: any) => {
+          this.controlsPanelIsActive = true;
+        });
+
+        this.canvas.on('object:rotating', (e: any) => {
+          this.controlsPanelIsActive = false;
+        });
+
+        this.canvas.on('object:rotated', (e: any) => {
+          this.controlsPanelIsActive = true;
         });
 
         this.canvas.on('object:rotating', (e: any) => {
@@ -211,10 +239,14 @@ export default class Canvas extends Vue {
 
         this.canvas.on('selection:cleared', (e: any) => {
           console.log('___ e cleared', e); // todo
+          this.controlsPanelIsActive = false;
           // this.removeObjectControlsPanel();
         });
 
         this.canvas.on('selection:updated', (e: any) => {
+          this.controlsPanelIsActive = false;
+          this.controlsPanelIsActive = true;
+          this.selectedObject = e.target;
           // console.log('___ selection:updated', e); // todo
           // this.removeObjectControlsPanel();
           // this.generateObjectControlsPanel(e);
@@ -224,8 +256,8 @@ export default class Canvas extends Vue {
           // need this for updating drawed controls
           this.canvas.renderAll();
           this.canvas.hoverCursor = 'move';
-          // e.target.cornerStyle = 'circle';
-          // e.target.cornerStyle = 'custom';
+          this.controlsPanelIsActive = !this.controlsPanelIsActive;
+          this.selectedObject = e.target;
           // console.log('___ e fff', e); // todo
           // e.target.centeredScaling = true;
           // e.target.hasBorders = false;

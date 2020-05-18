@@ -41,10 +41,6 @@ Vue.use(vClickOutside);
 export default class CanvasSizeControl extends Vue {
   private panelIsActive: boolean = false;
 
-  mounted() {
-    console.log('mounted');
-  }
-
   private changeCanvasSize(): void {
     this.panelIsActive = !this.panelIsActive;
   }
