@@ -65,6 +65,7 @@ export default class CropControl extends Vue {
   private cropOkay(): void {
     this.$emit('showCropControl', true);
     EventBus.$emit('cropEmit', true);
+    this.cropCanvas();
     setTimeout(() => {
       // TODO: Improve this?
       EventBus.$emit('drawingMode', 'freedraw');
@@ -161,13 +162,6 @@ export default class CropControl extends Vue {
 
   private listenToEvents(): void {
     const rect: fabric.Rect | any = this.cropRectangle;
-
-    EventBus.$off('cropEmit');
-    this.canvas.off('selection:cleared');
-
-    EventBus.$on('cropEmit', () => {
-      this.cropCanvas();
-    });
 
     this.canvas.on('selection:cleared', (e: any) => {
       this.canvas.setActiveObject(e.deselected[0]);

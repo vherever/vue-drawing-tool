@@ -1,7 +1,7 @@
 <template>
   <div class="s_scr__object_controls_panel"
        id="s_sir__object_controls_panel"
-       v-bind:style="'top: ' + (topPosition + 10) + 'px; left: ' +
+       v-bind:style="'top: ' + (topPosition) + 'px; left: ' +
        (leftPosition - panelW / 2) + 'px;'">
     <button class="s_scr__object_remove"
             @click="removeObject"></button>
@@ -13,6 +13,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import EventBus from '@/shared/eventBus';
+import AppService from '@/services/app-service';
 
 export declare const fabric: any;
 
@@ -20,9 +21,17 @@ export declare const fabric: any;
 export default class ObjectControlsPanel extends Vue {
   @Prop() private selectedObject: any;
   @Prop() private fabricCanvasRef!: fabric.Canvas;
+  @Prop() private zoomRatio!: number;
+  @Prop() private isCanvasCropped!: boolean;
   private readonly offsetTop: number = 100; // height of the controls panel
   private panelW: number = 0;
   private clipboard!: any;
+  private appService!: AppService;
+
+  constructor() {
+    super();
+    this.appService = new AppService();
+  }
 
   mounted() {
     this.panelW = this.panelWidth;
@@ -30,6 +39,9 @@ export default class ObjectControlsPanel extends Vue {
 
   updated() {
     this.panelW = this.panelWidth;
+    EventBus.$on('cropEmit', () => {
+      console.log('cropEmit1');
+    });
   }
 
   private get panelWidth(): number {
@@ -38,12 +50,45 @@ export default class ObjectControlsPanel extends Vue {
     return panelElement.offsetWidth;
   }
 
+  private get canvasOffset(): { width: number; height: number } {
+    const windowW: number = this.appService.windowInnerWidth;
+    const windowH: number = this.appService.windowInnerHeight - 100;
+    const canvasW: number = this.fabricCanvasRef.getWidth();
+    const canvasH: number = this.fabricCanvasRef.getHeight();
+    return {
+      width: (windowW - canvasW) / 2,
+      height: (windowH - canvasH) / 2,
+    };
+  }
+
   private get topPosition(): number {
-    return this.selectedObject.oCoords.mb.y + this.offsetTop;
+    const canvasOffsetY: number = this.canvasOffset.height;
+    let res: number;
+    if (this.zoomRatio >= 1 && !this.isCanvasCropped) {
+      res = this.selectedObject.oCoords.mb.y + this.offsetTop + 10;
+    } else if (this.isCanvasCropped) {
+      if (this.zoomRatio < 1) {
+        res = this.selectedObject.oCoords.mb.y + canvasOffsetY + this.offsetTop + 10;
+      } else {
+        res = this.selectedObject.oCoords.mb.y + this.offsetTop + 10;
+      }
+    } else {
+      res = this.selectedObject.oCoords.mb.y + canvasOffsetY + this.offsetTop + 10;
+    }
+    return res;
   }
 
   private get leftPosition(): number {
-    return this.selectedObject.oCoords.mb.x;
+    const canvasOffsetX: number = this.canvasOffset.width;
+    let res: number;
+    if (this.zoomRatio >= 1 && !this.isCanvasCropped) {
+      res = this.selectedObject.oCoords.mb.x;
+    } else if (this.isCanvasCropped) {
+      res = this.selectedObject.oCoords.mb.x + canvasOffsetX;
+    } else {
+      res = this.selectedObject.oCoords.mb.x + canvasOffsetX;
+    }
+    return res;
   }
 
   private removeObject(): void {
@@ -63,7 +108,6 @@ export default class ObjectControlsPanel extends Vue {
 
   private pasteObject() {
     this.clipboard.clone((clonedObj: any) => {
-      console.log('clonedObj', clonedObj);
       this.fabricCanvasRef.discardActiveObject();
       clonedObj.set({
         left: clonedObj.left + 10,

@@ -6,6 +6,8 @@
     <ObjectControlsPanel v-if="controlsPanelIsActive"
                          :selectedObject="selectedObject"
                          :fabricCanvasRef="canvas"
+                         :zoomRatio="zoomRatio"
+                         :isCanvasCropped="isCanvasCropped"
     ></ObjectControlsPanel>
   </div>
 </template>
@@ -42,6 +44,8 @@ export default class Canvas extends Vue {
   private canvasHelper!: CanvasHelper;
   private controlsPanelIsActive: boolean = false;
   private selectedObject!: any;
+  private zoomRatio: number = 1;
+  private isCanvasCropped: boolean = false;
 
   constructor() {
     super();
@@ -65,6 +69,7 @@ export default class Canvas extends Vue {
     this.canvas.clear();
     this.canvas.backgroundColor = '#ecf0f1';
     this.canvas.isDrawingMode = true;
+    this.controlsPanelIsActive = false;
   }
 
   private initCanvas(): void {
@@ -126,6 +131,17 @@ export default class Canvas extends Vue {
       const canvasHeight: number = this.canvasHeight * zoomRatio;
       this.canvas.setZoom(zoomRatio);
       this.setCanvasSize(canvasWidth, canvasHeight);
+      this.zoomRatio = zoomRatio;
+      if (this.controlsPanelIsActive) {
+        this.controlsPanelIsActive = false;
+        setTimeout(() => {
+          this.controlsPanelIsActive = true;
+        }, 0);
+      }
+    });
+
+    EventBus.$on('cropEmit', () => {
+      this.isCanvasCropped = true;
     });
 
     // TODO: refactor this
@@ -214,14 +230,16 @@ export default class Canvas extends Vue {
         });
 
         this.canvas.on('selection:cleared', (e: any) => {
-          console.log('___ e cleared', e); // todo
-          this.controlsPanelIsActive = false;
-          // this.removeObjectControlsPanel();
+          setTimeout(() => {
+            this.controlsPanelIsActive = false;
+          }, 0);
         });
 
         this.canvas.on('selection:updated', (e: any) => {
           this.controlsPanelIsActive = false;
-          this.controlsPanelIsActive = true;
+          setTimeout(() => {
+            this.controlsPanelIsActive = true;
+          }, 0);
           this.selectedObject = e.target;
           e.target.bringToFront();
         });
@@ -230,9 +248,11 @@ export default class Canvas extends Vue {
           // need this for updating drawed controls
           this.canvas.renderAll();
           this.canvas.hoverCursor = 'move';
-          this.controlsPanelIsActive = !this.controlsPanelIsActive;
           this.selectedObject = e.target;
           e.target.bringToFront();
+          setTimeout(() => {
+            this.controlsPanelIsActive = true;
+          }, 0);
         });
       }
       if (drawingMode === 'edit') {
