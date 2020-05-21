@@ -8,6 +8,7 @@
                          :fabricCanvasRef="canvas"
                          :zoomRatio="zoomRatio"
                          :isCanvasCropped="isCanvasCropped"
+                         :isCanvasCroppedOnce="isCanvasCroppedOnce"
     ></ObjectControlsPanel>
   </div>
 </template>
@@ -46,6 +47,7 @@ export default class Canvas extends Vue {
   private selectedObject!: any;
   private zoomRatio: number = 1;
   private isCanvasCropped: boolean = false;
+  private isCanvasCroppedOnce: boolean = false;
 
   constructor() {
     super();
@@ -126,6 +128,7 @@ export default class Canvas extends Vue {
     });
 
     EventBus.$on('zoomRatio', (zoomRatio: number) => {
+      // TODO: fix crop + zoom, reset
       this.canvasClass = zoomRatio >= 1 ? '' : 'v-aligned';
       const canvasWidth: number = this.canvasWidth * zoomRatio;
       const canvasHeight: number = this.canvasHeight * zoomRatio;

@@ -4,7 +4,7 @@
     <a href="javascript:;" class="c_zom_out" id="s_scr__zoom_out" @click="onZoomClick('out')"></a>
     <a href="javascript:;" class="reset_zoom" id="s_scr__zoom_reset"
        v-show="showZoomRatio"
-       @click="resetZoom()">reset</a>
+       @click="resetZoom">reset</a>
     <span class="zoom_ratio_info" id="s_scr__zoom_ratio"
           v-show="showZoomRatio">Zoom: {{ currentZoomPercentage }}%</span>
   </div>
@@ -73,6 +73,9 @@ export default class ZoomControl extends Vue {
     EventBus.$on('clearCanvas', () => {
       this.currentZoomPercentage = this.defaultZoomPercentage;
       this.currentZoomIndex = 3;
+    });
+    EventBus.$on('resetZoom', () => {
+      this.resetZoom();
     });
   }
 }

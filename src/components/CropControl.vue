@@ -29,8 +29,8 @@ export default class CropControl extends Vue {
 
   private canvas: any;
   private canvasHelper!: CanvasHelper;
-  private cropperWidth: number = 300;
-  private cropperHeight: number = 200;
+  private cropperWidth: number = this.zoomRatio < 1 ? 300 * this.zoomRatio : 300;
+  private cropperHeight: number = this.zoomRatio < 1 ? 200 * this.zoomRatio : 200;
   private objectsGroup: any;
   private readonly strokeWidth: number = 0;
   private cropperParameters: { top: number; left: number; width: number; height: number } = {

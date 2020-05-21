@@ -2,7 +2,7 @@
   <div class="s_scr__drawing_controls">
     <div class="s_scr_controls_inner">
       <div class="s_scr_controls_inner2"
-           v-if="showCropControl">
+           v-show="showCropControl">
         <!--Edit mode-->
         <button class="c_edit" ref="edit-mode"
                 v-bind:class="drawingMode === 'edit' ? 'active' : ''"

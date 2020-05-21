@@ -23,6 +23,7 @@ export default class ObjectControlsPanel extends Vue {
   @Prop() private fabricCanvasRef!: fabric.Canvas;
   @Prop() private zoomRatio!: number;
   @Prop() private isCanvasCropped!: boolean;
+  @Prop() private isCanvasCroppedOnce!: boolean;
   private readonly offsetTop: number = 100; // height of the controls panel
   private panelW: number = 0;
   private clipboard!: any;
@@ -39,9 +40,6 @@ export default class ObjectControlsPanel extends Vue {
 
   updated() {
     this.panelW = this.panelWidth;
-    EventBus.$on('cropEmit', () => {
-      console.log('cropEmit1');
-    });
   }
 
   private get panelWidth(): number {
@@ -80,12 +78,19 @@ export default class ObjectControlsPanel extends Vue {
 
   private get leftPosition(): number {
     const canvasOffsetX: number = this.canvasOffset.width;
-    let res: number;
-    if (this.zoomRatio >= 1 && !this.isCanvasCropped) {
-      res = this.selectedObject.oCoords.mb.x;
-    } else if (this.isCanvasCropped) {
-      res = this.selectedObject.oCoords.mb.x + canvasOffsetX;
+    let res: number = 0;
+    if (!this.isCanvasCropped) {
+      if (this.zoomRatio >= 1) {
+        if (this.isCanvasCroppedOnce) {
+          res = this.selectedObject.oCoords.mb.x + canvasOffsetX;
+        } else {
+          res = this.selectedObject.oCoords.mb.x;
+        }
+      } else {
+        res = this.selectedObject.oCoords.mb.x + canvasOffsetX;
+      }
     } else {
+      // eslint-disable-next-line
       res = this.selectedObject.oCoords.mb.x + canvasOffsetX;
     }
     return res;
@@ -97,7 +102,9 @@ export default class ObjectControlsPanel extends Vue {
 
   private copyAndPasteObject(): void {
     this.copyObject();
-    this.pasteObject();
+    setTimeout(() => {
+      this.pasteObject();
+    }, 0);
   }
 
   private copyObject() {
