@@ -23,7 +23,6 @@ export default class ObjectControlsPanel extends Vue {
   @Prop() private fabricCanvasRef!: fabric.Canvas;
   @Prop() private zoomRatio!: number;
   @Prop() private isCanvasCropped!: boolean;
-  @Prop() private isCanvasCroppedOnce!: boolean;
   private readonly offsetTop: number = 100; // height of the controls panel
   private panelW: number = 0;
   private clipboard!: any;
@@ -81,11 +80,7 @@ export default class ObjectControlsPanel extends Vue {
     let res: number = 0;
     if (!this.isCanvasCropped) {
       if (this.zoomRatio >= 1) {
-        if (this.isCanvasCroppedOnce) {
-          res = this.selectedObject.oCoords.mb.x + canvasOffsetX;
-        } else {
-          res = this.selectedObject.oCoords.mb.x;
-        }
+        res = this.selectedObject.oCoords.mb.x;
       } else {
         res = this.selectedObject.oCoords.mb.x + canvasOffsetX;
       }

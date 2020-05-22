@@ -8,7 +8,6 @@
                          :fabricCanvasRef="canvas"
                          :zoomRatio="zoomRatio"
                          :isCanvasCropped="isCanvasCropped"
-                         :isCanvasCroppedOnce="isCanvasCroppedOnce"
     ></ObjectControlsPanel>
   </div>
 </template>
@@ -111,7 +110,7 @@ export default class Canvas extends Vue {
     this.selectLayer();
     EventBus.$on('clearCanvas', () => {
       this.canvasWidth = this.appServiceInstance.windowInnerWidth;
-      this.canvasHeight = this.appServiceInstance.windowInnerHeight;
+      this.canvasHeight = this.appServiceInstance.windowInnerHeight - 100;
       this.clearCanvas();
     });
 
@@ -127,11 +126,23 @@ export default class Canvas extends Vue {
       this.canvasHeight = canvasDimensions.height;
     });
 
+    /*eslint-disable */
     EventBus.$on('zoomRatio', (zoomRatio: number) => {
-      // TODO: fix crop + zoom, reset
       this.canvasClass = zoomRatio >= 1 ? '' : 'v-aligned';
-      const canvasWidth: number = this.canvasWidth * zoomRatio;
-      const canvasHeight: number = this.canvasHeight * zoomRatio;
+      let canvasWidth: number = this.canvasWidth * zoomRatio;
+      let canvasHeight: number = this.canvasHeight * zoomRatio;
+
+      if (this.isCanvasCroppedOnce) {
+        if (zoomRatio === 1) {
+          this.isCanvasCroppedOnce = false;
+          const diff = zoomRatio / this.zoomRatio;
+          canvasWidth *= diff;
+          canvasHeight *= diff;
+          this.canvasWidth = canvasWidth;
+          this.canvasHeight = canvasHeight;
+        }
+      }
+
       this.canvas.setZoom(zoomRatio);
       this.setCanvasSize(canvasWidth, canvasHeight);
       this.zoomRatio = zoomRatio;
@@ -145,6 +156,11 @@ export default class Canvas extends Vue {
 
     EventBus.$on('cropEmit', () => {
       this.isCanvasCropped = true;
+      this.isCanvasCroppedOnce = true;
+      setTimeout(() => {
+        EventBus.$emit('resetZoom', true);
+        this.controlsPanelIsActive = false;
+      }, 0);
     });
 
     // TODO: refactor this
