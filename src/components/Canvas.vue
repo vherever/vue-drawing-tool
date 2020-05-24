@@ -8,6 +8,7 @@
                          :fabricCanvasRef="canvas"
                          :zoomRatio="zoomRatio"
                          :isCanvasCropped="isCanvasCropped"
+                         :objectControlsModes="objectControlsModes"
     ></ObjectControlsPanel>
   </div>
 </template>
@@ -47,6 +48,7 @@ export default class Canvas extends Vue {
   private zoomRatio: number = 1;
   private isCanvasCropped: boolean = false;
   private isCanvasCroppedOnce: boolean = false;
+  private objectControlsModes!: string[];
 
   constructor() {
     super();
@@ -64,6 +66,12 @@ export default class Canvas extends Vue {
 
   updated() {
     this.canvas.isDrawingMode = !(this.drawingMode === 'edit' || this.drawingMode === 'rectangle');
+  }
+
+  private get blurObject(): any {
+    const blurObject = this.canvas.getObjects()
+      .find((o: any) => o.type2 === 'blur');
+    return blurObject && this.canvas.remove(blurObject);
   }
 
   private clearCanvas(): void {
@@ -165,6 +173,10 @@ export default class Canvas extends Vue {
 
     // TODO: refactor this
     EventBus.$on('drawingMode', (drawingMode: string) => {
+      if (drawingMode !== 'blur' && drawingMode !== 'edit') {
+        this.canvas.remove(this.blurObject);
+      }
+
       // disable selection
       this.canvas.forEachObject((object: any) => {
         object.selectable = false;
@@ -199,7 +211,9 @@ export default class Canvas extends Vue {
         });
 
         this.canvas.on('object:moving', (e: any) => {
-          // this.canvasHelper.preventMovingObjectsOutsideCanvas(e);
+          if (e.target.type2 === 'blur') {
+            // this.canvasHelper.preventMovingObjectsOutsideCanvas(e);
+          }
           this.controlsPanelIsActive = false;
         });
 
@@ -255,6 +269,11 @@ export default class Canvas extends Vue {
         });
 
         this.canvas.on('selection:updated', (e: any) => {
+          if (e.target.type2 === 'blur') {
+            this.objectControlsModes = ['b'];
+          } else {
+            this.objectControlsModes = ['r', 'c'];
+          }
           this.controlsPanelIsActive = false;
           setTimeout(() => {
             this.controlsPanelIsActive = true;
@@ -264,6 +283,11 @@ export default class Canvas extends Vue {
         });
 
         this.canvas.on('selection:created', (e: any) => {
+          if (e.target.type2 === 'blur') {
+            this.objectControlsModes = ['b'];
+          } else {
+            this.objectControlsModes = ['r', 'c'];
+          }
           // need this for updating drawed controls
           this.canvas.renderAll();
           this.canvas.hoverCursor = 'move';

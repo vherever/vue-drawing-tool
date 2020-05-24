@@ -46,13 +46,13 @@
           ></DropdownColorPanel>
         </div>
 
+        <!--Blur-->
+        <BlurControl :fabricCanvasRef="canvasFabricRef"
+                     :zoomRatio="zoomRatio"></BlurControl>
+
         <!--Refresh Canvas-->
         <button class="c_clear_canvas" ref="clear-canvas"
                 @click="clearCanvas"></button>
-
-        <!--Clear Object-->
-        <button class="c_clear_object" ref="clear-object"
-                @click="clearSelected"></button>
 
         <div id="drawing-mode-options" style="display: none">
           <label for="drawing-mode-selector">Mode:</label>
@@ -118,7 +118,7 @@ import DropdownFiguresPanel from '@/components/DropdownFiguresPanel.vue';
 import AppService from '@/services/app-service';
 import CropControl from '@/components/CropControl.vue';
 import CanvasSizeControl from '@/components/CanvasSizeControl.vue';
-// import { fabric } from 'fabric';
+import BlurControl from '@/components/BlurControl.vue';
 
 const vClickOutside = require('v-click-outside');
 
@@ -135,6 +135,7 @@ export declare const fabric: any;
     DropdownFiguresPanel,
     CropControl,
     CanvasSizeControl,
+    BlurControl,
   },
   directives: {
     clickOutside: vClickOutside.directive,
@@ -252,10 +253,6 @@ export default class ControlsBar extends Vue {
     EventBus.$emit('zoomRatio', 1);
     this.emitCanvasMode('freedraw');
     this.initDefaultBrush();
-  }
-
-  private clearSelected(): void {
-    EventBus.$emit('clearSelected', true);
   }
 
   private emitCanvasMode(drawingMode: string): void {

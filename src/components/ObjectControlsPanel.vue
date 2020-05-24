@@ -4,9 +4,14 @@
        v-bind:style="'top: ' + (topPosition) + 'px; left: ' +
        (leftPosition - panelW / 2) + 'px;'">
     <button class="s_scr__object_remove"
+            v-if="isControlModeExist('r')"
             @click="removeObject"></button>
     <button class="s_scr__object_copy"
+            v-if="isControlModeExist('c')"
             @click="copyAndPasteObject"></button>
+    <button class="s_scr__object_blur"
+            v-if="isControlModeExist('b')"
+            @click="blurConfirm">blur</button>
   </div>
 </template>
 
@@ -23,6 +28,7 @@ export default class ObjectControlsPanel extends Vue {
   @Prop() private fabricCanvasRef!: fabric.Canvas;
   @Prop() private zoomRatio!: number;
   @Prop() private isCanvasCropped!: boolean;
+  @Prop() private readonly objectControlsModes!: string[];
   private readonly offsetTop: number = 100; // height of the controls panel
   private panelW: number = 0;
   private clipboard!: any;
@@ -130,6 +136,14 @@ export default class ObjectControlsPanel extends Vue {
       this.fabricCanvasRef.setActiveObject(clonedObj);
       this.fabricCanvasRef.requestRenderAll();
     });
+  }
+
+  private isControlModeExist(mode: string): boolean {
+    return !!this.objectControlsModes.find((m: string) => m === mode);
+  }
+
+  private blurConfirm(): void {
+    EventBus.$emit('blurConfirm', true);
   }
 }
 </script>
