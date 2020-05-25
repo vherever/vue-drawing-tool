@@ -13,7 +13,7 @@ import { FabricGroupFormatter } from '@/helpers/class-extend.helper';
 import EventBus from '@/shared/eventBus';
 
 export declare const fabric: any;
-
+/*eslint-disable */
 @Component
 export default class BlurControl extends Vue {
   @Prop() private fabricCanvasRef!: fabric.Canvas;
@@ -23,16 +23,27 @@ export default class BlurControl extends Vue {
 
   private blurSelection(left: number, top: number, img: any): void {
     if (img) {
-      img.cropX = left * this.zoomRatio;
-      img.cropY = top * this.zoomRatio;
-      img.width *= img.scaleX;
-      img.height *= img.scaleY;
-      img.scaleX = 1;
-      img.scaleY = 1;
+      // TODO: bug with displaying zoom el while blurring, disable zoom when blur
+      //   img.cropX = left * this.zoomRatio;
+      //   img.cropY = top * this.zoomRatio;
+      //   img.width *= img.scaleX;
+      //   img.height *= img.scaleY;
+      //   img.scaleX = 1;
+      //   img.scaleY = 1;
+
+      img.cropX = img.left * this.zoomRatio;
+      img.cropY = img.top * this.zoomRatio;
+      img.width *= img.scaleX * this.zoomRatio;
+      img.height *= img.scaleY * this.zoomRatio;
+      img.scaleX = 1 / this.zoomRatio;
+      img.scaleY = 1 / this.zoomRatio;
+
       img.type2 = 'blur';
       this.image = img;
+      img.dirty = true;
+      img.objectCaching = false;
+      img.setCoords();
     } else {
-      // eslint-disable-next-line
       fabric.Image.fromURL(this.blurredCanvas.toDataURL(), (img) => {
         img.cropX = left * this.zoomRatio;
         img.cropY = top * this.zoomRatio;
