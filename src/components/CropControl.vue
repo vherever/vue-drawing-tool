@@ -168,7 +168,7 @@ export default class CropControl extends Vue {
     });
 
     rect.on('moving', (e: any) => {
-      this.canvasHelper.preventMovingObjectsOutsideCanvas(e);
+      this.canvasHelper.preventMovingObjectsOutsideCanvas(e, this.zoomRatio);
     });
 
     rect.on('scaling', () => {

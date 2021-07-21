@@ -6,7 +6,6 @@
     <Canvas ref="canvas"
                 @canvas-fabric-ref="getCanvasFabricRef"
                 :drawingMode="drawingMode" />
-      <!--    <img alt="Vue logo" src="./assets/logo.png">-->
 
   </div>
 </template>

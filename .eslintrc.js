@@ -20,6 +20,11 @@ module.exports = {
     'no-plusplus': 'off',
     '@typescript-eslint/ban-ts-ignore': 'off',
     'no-param-reassign': 0,
-    '@typescript-eslint/no-var-requires': 0
+    '@typescript-eslint/no-var-requires': 0,
+    "max-len": [2, 124, 4, {"ignoreUrls": true}],
+    "prefer-const": ["off", {
+      "destructuring": "any",
+      "ignoreReadBeforeAssign": false
+    }]
   },
 };

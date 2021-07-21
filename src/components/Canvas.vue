@@ -100,6 +100,7 @@ export default class Canvas extends Vue {
     });
     this.$emit('canvas-fabric-ref', this.canvas);
     this.clearCanvas();
+    this.canvasClass = this.zoomRatio > 1 ? '' : 'v-aligned';
 
     // hide connection line with rotating point
     // (fabric as any).Object.prototype.controls.mtr.withConnection = false;
@@ -136,7 +137,9 @@ export default class Canvas extends Vue {
 
     /*eslint-disable */
     EventBus.$on('zoomRatio', (zoomRatio: number) => {
-      this.canvasClass = zoomRatio >= 1 ? '' : 'v-aligned';
+      setTimeout(() => {
+        this.canvasClass = this.zoomRatio > 1 ? '' : 'v-aligned';
+      }, 1);
       let canvasWidth: number = this.canvasWidth * zoomRatio;
       let canvasHeight: number = this.canvasHeight * zoomRatio;
 
@@ -212,7 +215,7 @@ export default class Canvas extends Vue {
 
         this.canvas.on('object:moving', (e: any) => {
           if (e.target.type2 === 'blur') {
-            // this.canvasHelper.preventMovingObjectsOutsideCanvas(e);
+            this.canvasHelper.preventMovingObjectsOutsideCanvas(e, this.zoomRatio);
           }
           this.controlsPanelIsActive = false;
         });
@@ -238,6 +241,9 @@ export default class Canvas extends Vue {
 
         this.canvas.on('object:scaling', (e: any) => {
           this.controlsPanelIsActive = false;
+          if (e.target.type2 === 'blur') {
+            this.canvasHelper.preventMovingObjectsOutsideCanvas(e, this.zoomRatio);
+          }
         });
 
         this.canvas.on('object:scaled', (e: any) => {

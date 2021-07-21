@@ -30,6 +30,7 @@ export default class ObjectControlsPanel extends Vue {
   @Prop() private isCanvasCropped!: boolean;
   @Prop() private readonly objectControlsModes!: string[];
   private readonly offsetTop: number = 100; // height of the controls panel
+  private readonly offsetLeft: number = 0; // height of the controls panel
   private panelW: number = 0;
   private clipboard!: any;
   private appService!: AppService;
@@ -40,6 +41,7 @@ export default class ObjectControlsPanel extends Vue {
   }
 
   mounted() {
+    console.log('zoomRatio', this.zoomRatio);
     this.panelW = this.panelWidth;
   }
 
@@ -55,26 +57,21 @@ export default class ObjectControlsPanel extends Vue {
 
   private get canvasOffset(): { width: number; height: number } {
     const windowW: number = this.appService.windowInnerWidth;
-    const windowH: number = this.appService.windowInnerHeight - 100;
+    const windowH: number = this.appService.windowInnerHeight;
     const canvasW: number = this.fabricCanvasRef.getWidth();
     const canvasH: number = this.fabricCanvasRef.getHeight();
     return {
       width: (windowW - canvasW) / 2,
-      height: (windowH - canvasH) / 2,
+      height: (windowH - canvasH - 100) / 2,
     };
   }
 
   private get topPosition(): number {
     const canvasOffsetY: number = this.canvasOffset.height;
+
     let res: number;
-    if (this.zoomRatio >= 1 && !this.isCanvasCropped) {
+    if (this.zoomRatio > 1) {
       res = this.selectedObject.oCoords.mb.y + this.offsetTop + 10;
-    } else if (this.isCanvasCropped) {
-      if (this.zoomRatio < 1) {
-        res = this.selectedObject.oCoords.mb.y + canvasOffsetY + this.offsetTop + 10;
-      } else {
-        res = this.selectedObject.oCoords.mb.y + this.offsetTop + 10;
-      }
     } else {
       res = this.selectedObject.oCoords.mb.y + canvasOffsetY + this.offsetTop + 10;
     }
@@ -83,16 +80,15 @@ export default class ObjectControlsPanel extends Vue {
 
   private get leftPosition(): number {
     const canvasOffsetX: number = this.canvasOffset.width;
-    let res: number = 0;
+    let res: number;
     if (!this.isCanvasCropped) {
-      if (this.zoomRatio >= 1) {
-        res = this.selectedObject.oCoords.mb.x;
+      if (this.zoomRatio > 1) {
+        res = this.selectedObject.oCoords.mb.x + this.offsetLeft / 2;
       } else {
-        res = this.selectedObject.oCoords.mb.x + canvasOffsetX;
+        res = this.selectedObject.oCoords.mb.x + canvasOffsetX + this.offsetLeft / 2;
       }
     } else {
-      // eslint-disable-next-line
-      res = this.selectedObject.oCoords.mb.x + canvasOffsetX;
+      res = this.selectedObject.oCoords.mb.x + canvasOffsetX + this.offsetLeft / 2;
     }
     return res;
   }
